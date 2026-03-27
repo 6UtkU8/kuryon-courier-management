@@ -1,0 +1,45 @@
+<section class="section-card panel-page-enter">
+  <div class="section-title">
+    <h3>Havuz</h3>
+    <p>Henüz kuryeye atanmamış siparişler. Üzerine aldığında sipariş sana atanır ve ana sayfada görünür.</p>
+  </div>
+
+  @if (poolOrders.length === 0) {
+    <div class="pool-empty">
+      {{ t.courierPanel.poolEmpty }}
+    </div>
+  } @else {
+    <div class="pool-table-wrap">
+      <table class="pool-table">
+        <thead>
+          <tr>
+            <th>Sipariş</th>
+            <th>Firma</th>
+            <th>Müşteri</th>
+            <th>Adres</th>
+            <th>Oluşturma</th>
+            <th>Geçen süre</th>
+            <th>Tutar</th>
+            <th>İşlem</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of poolOrders; trackBy: trackByOrderId">
+            <td>{{ order.id }}</td>
+            <td>{{ order.company }}</td>
+            <td>{{ order.customer }}</td>
+            <td>{{ order.address }}</td>
+            <td>{{ order.createdAt }}</td>
+            <td><app-order-elapsed [order]="order" /></td>
+            <td>{{ formatAmount(order.fee) }}</td>
+            <td>
+              <button type="button" class="pool-claim-btn" (click)="claimOrder(order, $event)">
+                Üzerime al
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  }
+</section>

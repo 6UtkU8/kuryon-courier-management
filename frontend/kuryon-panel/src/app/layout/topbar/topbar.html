@@ -1,0 +1,42 @@
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="menu-btn" type="button" (click)="onToggleSidebar()">
+      <span class="material-symbols-outlined">menu</span>
+    </button>
+
+    <div class="topbar-title">
+      <strong>Operasyon Paneli</strong>
+      <span>Kurye ve sipariş yönetimi</span>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <label class="topbar-field-row director-select-wrap">
+      <span class="topbar-field-label director-select-label">Aktif Direktör</span>
+      <div class="topbar-field-control select-wrap custom-select-wrap">
+        <app-overlay-select
+          id="active-director-select"
+          ariaLabel="Aktif direktör seçimi"
+          [options]="directorSelectOptions"
+          [value]="currentDirectorId"
+          [panelMaxHeight]="260"
+          (valueChange)="onDirectorChange($event)"
+        />
+      </div>
+    </label>
+    <span
+      class="mobile-access-chip u-status-badge"
+      [class.off]="!isMobileAccessEnabled"
+      [attr.aria-label]="'Mobil erişim durumu: ' + (isMobileAccessEnabled ? 'Açık' : 'Kapalı')"
+    >
+      Mobil: {{ isMobileAccessEnabled ? 'Açık' : 'Kapalı' }}
+    </span>
+    <span class="mobile-access-chip u-status-badge" *ngIf="userName && userRole">
+      {{ userName }} ({{ userRole }})
+    </span>
+    <button class="logout-btn" type="button" (click)="onLogout()">
+      <span class="material-symbols-outlined">logout</span>
+      Çıkış Yap
+    </button>
+  </div>
+</header>

@@ -1,0 +1,16 @@
+.order-elapsed {
+  display: inline-flex;
+  align-items: center;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.order-elapsed__value {
+  font-weight: 600;
+  color: inherit;
+}
+
+.order-elapsed--live .order-elapsed__value {
+  color: #7dd3fc;
+  text-shadow: 0 0 18px rgba(125, 211, 252, 0.25);
+}

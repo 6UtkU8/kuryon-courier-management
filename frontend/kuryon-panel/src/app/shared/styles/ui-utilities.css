@@ -1,0 +1,94 @@
+.u-surface-card {
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.u-surface-panel {
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(16, 23, 43, 0.98), rgba(13, 19, 37, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
+}
+
+.u-btn-base {
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.u-btn-primary {
+  border: none;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--brand-accent-1), var(--brand-accent-2));
+}
+
+.u-btn-ghost {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: #dbe7fb;
+}
+
+.u-input-base {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: #eef4ff;
+  border-radius: 14px;
+  outline: none;
+}
+
+.u-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.u-status-badge {
+  min-width: 128px;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  white-space: nowrap;
+  box-sizing: border-box;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.u-compact-info-chip {
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  white-space: nowrap;
+  box-sizing: border-box;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.u-select-control {
+  width: 100%;
+  min-height: 42px;
+  border-radius: 12px;
+  padding: 0 36px 0 12px;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  line-height: 1.2;
+}

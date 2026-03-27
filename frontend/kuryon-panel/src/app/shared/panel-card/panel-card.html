@@ -1,0 +1,26 @@
+<section class="panel-card">
+  <div class="panel-header">
+    <div class="panel-heading">
+      <div class="panel-title-row">
+        @if (icon) {
+          <span class="material-symbols-outlined panel-icon">{{ icon }}</span>
+        }
+
+        <h3>{{ title }}</h3>
+      </div>
+
+      <p>{{ description }}</p>
+    </div>
+
+    <div class="panel-header-trailing">
+      <ng-content select="[panel-header-extra]"></ng-content>
+      @if (actionText) {
+        <button class="mini-btn" type="button">{{ actionText }}</button>
+      }
+    </div>
+  </div>
+
+  <div class="panel-body">
+    <ng-content></ng-content>
+  </div>
+</section>

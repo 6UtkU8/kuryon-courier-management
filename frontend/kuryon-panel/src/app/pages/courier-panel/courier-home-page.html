@@ -1,0 +1,169 @@
+<section class="section-card panel-page-enter">
+  <div class="section-title">
+    <h3>Üzerime Düşen Paketler</h3>
+    <p>Sana atanmış aktif paketler burada görünür. Buradaki değişiklikler admin paneline yansır.</p>
+  </div>
+
+  <div
+    class="package-list"
+    cdkDropList
+    [cdkDropListDisabled]="packages.length < 2"
+    (cdkDropListDropped)="onPackageDrop($event)"
+  >
+    <article
+      class="package-card"
+      *ngFor="let item of packages; trackBy: trackByOrderId"
+      cdkDrag
+      [cdkDragDisabled]="packages.length < 2"
+    >
+      <div class="package-top">
+        <div class="package-top-main">
+          <button
+            type="button"
+            class="package-drag-handle"
+            cdkDragHandle
+            aria-label="Sürükleyerek sırala"
+            (click)="$event.stopPropagation()"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">drag_indicator</span>
+          </button>
+          <div>
+            <strong>{{ item.id }}</strong>
+            <p>{{ item.company }}</p>
+          </div>
+        </div>
+
+        <div
+          class="package-store-info"
+          [class.store-ready]="item.storeReadyForPickup"
+        >
+          @if (item.storeReadyForPickup) {
+            <span class="store-info-single">Hazır Alınacak</span>
+          } @else {
+            <span class="store-info-label">Tahmini Hazırlanma Süresi</span>
+            <span class="store-info-value">{{ item.eta }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="package-grid">
+        <div class="package-item">
+          <span>Müşteri</span>
+          <strong>{{ item.customer }}</strong>
+        </div>
+
+        <div class="package-item package-item-address">
+          <span>Adres</span>
+          <div class="address-line">
+            <strong>{{ item.displayAddress }}</strong>
+            <a
+              class="map-nav-link"
+              [href]="item.canOpenMap ? item.mapsUrl : '#'"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Haritada yönlendirme aç"
+              (click)="$event.stopPropagation()"
+            >
+              <span class="material-symbols-outlined" aria-hidden="true">map</span>
+            </a>
+          </div>
+        </div>
+
+        @if (item.hasDeliveryNote) {
+          <div class="package-item package-item-note">
+            <span>Teslimat Notu</span>
+            <p class="note-preview">{{ item.deliveryNotePreview }}</p>
+            @if (item.deliveryNoteFull !== item.deliveryNotePreview) {
+              <details class="note-details">
+                <summary>Tüm notu gör</summary>
+                <p class="note-full">{{ item.deliveryNoteFull }}</p>
+              </details>
+            }
+          </div>
+        }
+
+        <div class="package-item">
+          <span>Ücret</span>
+          <strong class="fee-line">
+            {{ item.feeLabel }}
+            @if (item.paymentType) {
+              <span class="fee-sep"> · </span>
+              <span [ngClass]="item.paymentClass">{{ item.paymentType }}</span>
+            }
+          </strong>
+        </div>
+
+        <div class="package-item">
+          <span>Geçen süre</span>
+          <strong class="package-elapsed-wrap"><app-order-elapsed [order]="item" /></strong>
+        </div>
+      </div>
+
+      <div class="package-actions">
+        <button type="button" class="primary-trip-btn" (click)="onPrimaryAction(item)">
+          {{ item.primaryButtonLabel }}
+        </button>
+
+        <div class="call-menu-wrap">
+          <button
+            type="button"
+            class="search-action-btn"
+            (click)="toggleCallMenu(item.id, $event)"
+            [attr.aria-expanded]="callMenuOrderId === item.id"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">call</span>
+            Arama
+          </button>
+          @if (callMenuOrderId === item.id) {
+            <div class="call-menu-popup" role="menu" (click)="$event.stopPropagation()">
+              @if (item.customerTelHref; as cTel) {
+                <a class="call-menu-link" [href]="cTel" role="menuitem">Müşteriyi Ara</a>
+              } @else {
+                <span class="call-menu-muted" role="presentation">Müşteri telefonu yok</span>
+              }
+              @if (item.restaurantTelHref; as rTel) {
+                <a class="call-menu-link" [href]="rTel" role="menuitem">Restoranı Ara</a>
+              } @else {
+                <span class="call-menu-muted" role="presentation">Restoran telefonu yok</span>
+              }
+            </div>
+          }
+        </div>
+
+        <button type="button" class="pool-release-btn" (click)="releaseToPool(item)">
+          Havuza at
+        </button>
+      </div>
+    </article>
+
+    <div class="empty-state" *ngIf="packages.length === 0">
+      {{ t.courierPanel.assignedPackagesEmpty }}
+    </div>
+  </div>
+  <div class="empty-state" *ngIf="actionMessage" [class.status-rejected]="actionType === 'error'">
+    {{ actionMessage }}
+  </div>
+</section>
+
+@if (confirmTarget) {
+  <div class="confirm-backdrop" (click)="cancelDeliverConfirm()" role="presentation">
+    <div
+      class="confirm-dialog"
+      (click)="$event.stopPropagation()"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="deliver-confirm-title"
+    >
+      <p id="deliver-confirm-title" class="confirm-dialog-title">Siparişi teslim ettiniz mi?</p>
+      <p class="confirm-dialog-hint">Onaylarsanız sipariş teslim edildi olarak işaretlenir ve listeden kalkar.</p>
+      <div class="confirm-dialog-actions">
+        <button type="button" class="confirm-btn-secondary" (click)="cancelDeliverConfirm()">
+          Vazgeç
+        </button>
+        <button type="button" class="confirm-btn-primary" [disabled]="!!deliveringOrderId" (click)="confirmDeliver()">
+          {{ deliveringOrderId ? 'İşleniyor...' : 'Evet, teslim edildi' }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

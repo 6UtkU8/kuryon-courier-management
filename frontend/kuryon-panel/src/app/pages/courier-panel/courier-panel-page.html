@@ -1,0 +1,192 @@
+<div class="courier-page" *ngIf="courier">
+  <header class="courier-header">
+    <div>
+      <h1>Kurye Paneli</h1>
+      <p>Hoş geldin, {{ courier.name }}</p>
+    </div>
+
+    <div class="header-actions">
+      <a class="header-btn secondary" routerLink="/">Anasayfa</a>
+      <a class="header-btn danger" routerLink="/">Çıkış Yap</a>
+    </div>
+  </header>
+
+  <section class="courier-profile-card">
+    <div class="profile-main">
+      <div class="profile-avatar">
+        {{ courier.name.charAt(0) }}
+      </div>
+
+      <div class="profile-info">
+        <h2>{{ courier.name }}</h2>
+        <p>{{ courier.phone }} • {{ courier.region }}</p>
+
+        @if (courier.status === 'Mola' && courier.breakReason) {
+          <div class="break-badge">
+            Mola Nedeni: {{ courier.breakReason }}
+            @if (courier.breakMinutes) {
+              <span>• {{ courier.breakMinutes }} dk</span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="status-switch">
+      <div
+        class="status-switch-slider"
+        [style.transform]="'translateX(' + (getStatusIndex() * 100) + '%)'"
+      ></div>
+
+      <button
+        *ngFor="let status of statusOptions; trackBy: trackByStatus"
+        type="button"
+        class="status-switch-btn"
+        [class.active]="courier.status === status"
+        (click)="setCourierStatus(status)"
+      >
+        {{ status }}
+      </button>
+    </div>
+  </section>
+
+  <section class="courier-stats">
+    <article class="stat-box">
+      <strong>{{ deliveredCount }}</strong>
+      <span>Bugünkü Teslimat</span>
+    </article>
+
+    <article class="stat-box">
+      <strong>{{ formatAmount(totalRevenue) }}</strong>
+      <span>Bugünkü Kazanç</span>
+    </article>
+
+    <article class="stat-box">
+      <strong>{{ onlineMinutes }} dk</strong>
+      <span>Günlük Rapor</span>
+    </article>
+  </section>
+
+  <section class="history-section">
+    <div class="section-title">
+      <h3>Son Teslim Edilen Paketler</h3>
+      <p>Son teslim edilen siparişler ve günlük raporun burada görünür.</p>
+    </div>
+
+    <div class="history-list">
+      <article class="history-card" *ngFor="let item of history; trackBy: trackByOrderId">
+        <div class="history-card-top">
+          <div class="history-brand">
+            <div class="history-logo">{{ item.image }}</div>
+
+            <div class="history-brand-info">
+              <h4>{{ item.company }}</h4>
+            </div>
+          </div>
+        </div>
+
+        <div class="history-meta">
+          <div class="history-line">
+            <span class="history-icon">🕒</span>
+            <span>Hazır:</span>
+            <strong>{{ item.preparedAt }}</strong>
+          </div>
+
+          <div class="history-line">
+            <span class="history-icon">👤</span>
+            <strong class="history-customer">{{ item.customer }}</strong>
+          </div>
+
+          <div class="history-line address-line">
+            <span class="history-icon">📍</span>
+            <strong>{{ item.address }}</strong>
+          </div>
+
+          <div class="history-line">
+            <span class="history-icon">✔</span>
+            <span>Teslim Edildi</span>
+            <small>({{ item.deliveredAtText }})</small>
+          </div>
+
+          <div class="history-line total-line">
+            <span class="history-icon">💳</span>
+            <strong>{{ historyTotalLabels[item.id] }}</strong>
+            <span class="history-platform">- {{ item.paymentType }}</span>
+          </div>
+        </div>
+
+        <div class="history-bottom">
+          <div class="history-id-block">
+            <strong>{{ item.id }}</strong>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  @if (isBreakModalOpen) {
+    <div class="modal-overlay" (click)="closeBreakModal()"></div>
+
+    <div class="break-modal">
+      <div class="break-modal-header">
+        <div>
+          <span class="break-modal-badge">Mola Seçimi</span>
+          <h3>Mola nedeni seç</h3>
+          <p>Mola durumuna geçmeden önce bir neden belirt ve süre gir.</p>
+        </div>
+
+        <button class="modal-close-btn" type="button" (click)="closeBreakModal()">
+          ×
+        </button>
+      </div>
+
+      <div class="break-options">
+        <button
+          *ngFor="let option of breakOptions; trackBy: trackByBreakReason"
+          type="button"
+          class="break-option-btn"
+          [class.selected]="selectedBreakOption === option"
+          (click)="selectBreakReason(option)"
+        >
+          {{ option }}
+        </button>
+      </div>
+
+      <div class="break-duration-group">
+        <label>Mola Süresi (Dakika)</label>
+        <input type="number" min="1" [(ngModel)]="pendingBreakMinutes" placeholder="Örn: 15" />
+      </div>
+
+      <div class="break-modal-actions">
+        <button class="modal-primary-btn" type="button" (click)="submitBreakSelection()">
+          Mola Başlat
+        </button>
+        <button class="modal-secondary-btn" type="button" (click)="closeBreakModal()">
+          Vazgeç
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (isStatusConfirmModalOpen && pendingStatusSelection) {
+    <div class="modal-overlay" (click)="closeStatusConfirmModal()"></div>
+
+    <div class="confirm-modal">
+      <div class="confirm-modal-header">
+        <h3>Durum Değişikliği</h3>
+        <p>
+          Durumunuzu <strong>{{ pendingStatusSelection }}</strong> olarak değiştirmek istediğinize emin misiniz?
+        </p>
+      </div>
+
+      <div class="confirm-modal-actions">
+        <button class="modal-primary-btn" type="button" (click)="confirmPendingStatus()">
+          Evet, Değiştir
+        </button>
+        <button class="modal-secondary-btn" type="button" (click)="closeStatusConfirmModal()">
+          Hayır
+        </button>
+      </div>
+    </div>
+  }
+</div>

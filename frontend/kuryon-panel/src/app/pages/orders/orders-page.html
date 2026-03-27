@@ -1,0 +1,180 @@
+<div class="panel-page-enter">
+    <section class="page-card panel-section-top-gap">
+      <div class="page-header">
+        <div>
+          <h1>Siparişler</h1>
+          <p>Tüm siparişleri filtreleyebilir ve durumlarını takip edebilirsin.</p>
+        </div>
+
+        <div class="summary-box">
+          <strong>{{ filteredOrders.length }}</strong>
+          <span>Gösterilen Sipariş</span>
+        </div>
+      </div>
+
+      <div class="filters-bar">
+        <div class="ops-note">
+          İptal eşiğini aşan bekleyen sipariş: <strong>{{ overCancelWindowCount }}</strong>
+          ({{ settings.operations.orderCancelWindowMinutes }} dk)
+        </div>
+        <div class="search-box">
+          <span class="material-symbols-outlined search-icon">search</span>
+          <input
+            type="text"
+            placeholder="Sipariş, firma, müşteri veya adres ara"
+            [ngModel]="searchTerm"
+            (ngModelChange)="onSearchTermChange($event)"
+          />
+        </div>
+
+        <div class="filter-chips">
+          <button
+            *ngFor="let opt of statusOptions; trackBy: trackByStatusOption"
+            type="button"
+            class="filter-chip"
+            [class.active]="statusFilter === opt.key"
+            (click)="setStatusFilter(opt.key)"
+          >
+            {{ opt.label }}
+          </button>
+        </div>
+        <div class="filter-chips">
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="originFilter === 'all'"
+            (click)="setOriginFilter('all')"
+          >
+            Kaynak: Tümü
+          </button>
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="originFilter === 'store_call'"
+            (click)="setOriginFilter('store_call')"
+          >
+            Kaynak: Mağaza Çağrısı
+          </button>
+        </div>
+        <div class="filter-chips">
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="noteFilter === 'all'"
+            (click)="setNoteFilter('all')"
+          >
+            Not: Hepsi
+          </button>
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="noteFilter === 'with_note'"
+            (click)="setNoteFilter('with_note')"
+          >
+            Not: Notu Olanlar
+          </button>
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="noteFilter === 'long_note'"
+            (click)="setNoteFilter('long_note')"
+          >
+            Not: Uzun Notlar
+          </button>
+        </div>
+        @if (pageError) {
+          <div class="assign-feedback error">
+            {{ pageError }}
+            <button type="button" class="filter-chip" (click)="reloadOrders()">Yeniden dene</button>
+          </div>
+        }
+        <button type="button" class="filter-chip" [disabled]="!canAssignOrder">
+          {{ canAssignOrder ? t.orders.assignOrder : t.orders.noAssignPermission }}
+        </button>
+      </div>
+
+      <div class="table-wrapper">
+        @if (isLoading) {
+          <div class="empty-state">Siparişler yükleniyor...</div>
+        } @else {
+        <table>
+          <thead>
+            <tr>
+              <th>Sipariş No</th>
+              <th>Firma</th>
+              <th>Müşteri</th>
+              <th>Adres</th>
+              <th>Teslimat Notu</th>
+              <th>Tutar</th>
+              <th>Geçen süre</th>
+              <th>Kurye</th>
+              <th>Durum</th>
+              <th>İşlem</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let order of filteredOrders; trackBy: trackByOrderId">
+              <td>
+                {{ order.id }}
+                @if (order.origin === 'store_call') {
+                  <span class="order-origin-badge">Mağaza Çağrısı</span>
+                }
+              </td>
+              <td>{{ order.company }}</td>
+              <td>{{ order.customer }}</td>
+              <td>{{ order.address }}</td>
+              <td class="order-note-cell">
+                @if (order.hasDeliveryNote) {
+                  <div class="order-note-preview">{{ order.deliveryNotePreview }}</div>
+                  @if (order.deliveryNoteFull !== order.deliveryNotePreview) {
+                    <details class="order-note-details">
+                      <summary>Tüm notu gör</summary>
+                      <div class="order-note-full">{{ order.deliveryNoteFull }}</div>
+                    </details>
+                  }
+                } @else {
+                  —
+                }
+              </td>
+              <td>{{ order.totalLabel }}</td>
+              <td><app-order-elapsed [order]="order" /></td>
+              <td>{{ order.courierName || '—' }}</td>
+              <td>
+                <span class="status-chip" [ngClass]="order.statusClass">
+                  {{ order.statusLabel }}
+                </span>
+                @if (order.assignmentSource === 'auto') {
+                  <span class="auto-assigned-badge">Otomatik</span>
+                }
+              </td>
+              <td>
+                @if (canShowAssignAction(order)) {
+                  <button
+                    type="button"
+                    class="filter-chip"
+                    [disabled]="assigningOrderId === order.id"
+                    (click)="onAssignOrderClick(order)"
+                  >
+                    {{ assigningOrderId === order.id ? 'Atanıyor...' : getAssignActionLabel(order) }}
+                  </button>
+                }
+                @if (order.autoAssignHint) {
+                  <div class="assign-hint">{{ order.autoAssignHint }}</div>
+                }
+              </td>
+            </tr>
+
+            <tr *ngIf="filteredOrders.length === 0">
+              <td colspan="10">
+                <div class="empty-state">
+                  {{ t.orders.emptyFilteredOrders }}
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        }
+      </div>
+    </section>
+</div>

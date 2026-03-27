@@ -1,0 +1,43 @@
+/**
+ * Ortak panel sayfa girişi — premium, yumuşak fade + slide-up.
+ * Route değişince bileşen yeniden oluştuğunda bir kez çalışır.
+ */
+@keyframes panelPageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-page-enter,
+.page-enter {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  animation: panelPageEnter 0.14s ease-out both;
+  contain: content;
+}
+
+.panel-section-top-gap {
+  margin-top: 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel-page-enter,
+  .page-enter {
+    animation: none;
+    transform: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .panel-section-top-gap {
+    margin-top: 16px;
+  }
+}

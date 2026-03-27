@@ -1,0 +1,159 @@
+<div class="panel-page-enter">
+    <section class="page-card panel-section-top-gap">
+      <div class="page-header">
+        <div>
+          <h1>Raporlar</h1>
+          <p>Operasyon performansı, bölgesel yoğunluk ve temel teslimat metrikleri.</p>
+        </div>
+
+        <div class="filter-chips">
+          <button
+            *ngFor="let range of rangeOptions; trackBy: trackByRange"
+            type="button"
+            class="filter-chip"
+            [class.active]="selectedRange === range"
+            (click)="setRange(range)"
+          >
+            {{ range }}
+          </button>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-card" *ngFor="let card of summaryCards; trackBy: trackByCard">
+          <span class="stat-label">{{ card.label }}</span>
+          <strong class="stat-value">{{ card.value }}</strong>
+          <span class="stat-trend">{{ card.trend }}</span>
+        </article>
+      </div>
+
+      <div class="content-grid">
+        <section #tableSection class="panel-card">
+          <div class="panel-header">
+            <h2>Bölgesel Performans</h2>
+            <span>{{ selectedRange }} görünüm</span>
+          </div>
+
+          @if (!isDataLoading) {
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Bölge</th>
+                    <th>Toplam Sipariş</th>
+                    <th>Tamamlanan</th>
+                    <th>İptal</th>
+                    <th>Başarı</th>
+                    <th>Gelir</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of pagedRegionReports; trackBy: trackByRegion">
+                    <td>{{ item.region }}</td>
+                    <td>{{ item.totalOrders }}</td>
+                    <td>{{ item.completedOrders }}</td>
+                    <td>{{ item.cancelledOrders }}</td>
+                    <td>
+                      <span class="success-rate">
+                        %{{ item.completionRate }}
+                      </span>
+                    </td>
+                    <td>{{ item.revenueLabel }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            @if (hasRegionPagination) {
+              <div class="table-pager">
+                <button type="button" class="filter-chip" (click)="prevRegionPage()" [disabled]="regionCurrentPage === 1">
+                  Önceki
+                </button>
+                <span>Sayfa {{ regionCurrentPage }} / {{ regionTotalPages }}</span>
+                <button
+                  type="button"
+                  class="filter-chip"
+                  (click)="nextRegionPage()"
+                  [disabled]="regionCurrentPage === regionTotalPages"
+                >
+                  Sonraki
+                </button>
+              </div>
+            }
+          } @else {
+            <div class="report-skeleton">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          }
+        </section>
+
+        <section #detailsSection class="side-column">
+          @if (!isDataLoading) {
+          <article class="panel-card payment-panel">
+            <div class="panel-header">
+              <h2>Ödeme Dağılımı</h2>
+              <span>{{ selectedRange }}</span>
+            </div>
+
+            <div class="payment-rows">
+              <div class="payment-row">
+                <span>Nakit</span>
+                <strong>{{ paymentSummary.cashTotalLabel }}</strong>
+              </div>
+              <div class="payment-row">
+                <span>Kart</span>
+                <strong>{{ paymentSummary.cardTotalLabel }}</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel-card">
+            <div class="panel-header">
+              <h2>Operasyon Notları</h2>
+              <span>Özet</span>
+            </div>
+
+            <ul class="notes-list">
+              <li *ngFor="let note of recentNotes; trackBy: trackByNote">
+                {{ note }}
+              </li>
+            </ul>
+          </article>
+
+          @if (canViewLogs) {
+            <article class="panel-card">
+              <div class="panel-header">
+                <h2>Loglar</h2>
+                <button type="button" class="filter-chip" [disabled]="!canExportLogs">Log Dışa Aktar</button>
+              </div>
+              <p>Denetim logları yalnızca yetkili direktörler için görünür.</p>
+            </article>
+          }
+
+          <article class="panel-card highlight-card">
+            <div class="panel-header">
+              <h2>Yönetici Yorumu</h2>
+              <span>{{ selectedRange }}</span>
+            </div>
+
+            <p>
+              Mevcut veriler, teslimat başarısının yüksek seyrettiğini ve özellikle
+              Melikgazi ile Talas bölgelerinde operasyon verimliliğinin güçlü olduğunu gösteriyor.
+              Yoğun saatlerde kurye dağılımını optimize ederek teslim süresi daha da düşürülebilir.
+            </p>
+          </article>
+          } @else {
+            <article class="panel-card report-skeleton-card">
+              <div class="report-skeleton">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </article>
+          }
+        </section>
+      </div>
+    </section>
+</div>

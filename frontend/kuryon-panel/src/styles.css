@@ -1,0 +1,195 @@
+@import './app/shared/styles/ui-utilities.css';
+
+:root {
+  /* Baseline: dark (ilk paint flicker engeli) */
+  --bg: #020b1e;
+  --card: rgba(10, 22, 52, 0.92);
+  --text: #eef4ff;
+  --text-secondary: #a9b7d6;
+  --border: rgba(255, 255, 255, 0.08);
+  --primary: linear-gradient(135deg, #15c7e8 0%, #3a7bff 100%);
+  --font-family-base: 'Inter', 'Segoe UI', Arial, Helvetica, sans-serif;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-md: 14px;
+  --text-lg: 15px;
+  --text-xl: 24px;
+  --brand-accent-1: #21c7b7;
+  --brand-accent-2: #7b61ff;
+}
+
+.dark-theme {
+  /* DARK THEME */
+  --bg: #020b1e;
+  --card: rgba(10, 22, 52, 0.92);
+  --text: #eef4ff;
+  --text-secondary: #a9b7d6;
+  --border: rgba(255, 255, 255, 0.08);
+  --primary: linear-gradient(135deg, #15c7e8 0%, #3a7bff 100%);
+}
+
+/* GLOBAL */
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+  margin: 0;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  font-family: var(--font-family-base);
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body.modal-scroll-lock {
+  overflow: hidden;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+app-root {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* Global layout standard: page -> wrapper -> content */
+:where(
+  [class$='-page'],
+  [class*='-page '],
+  [class$='-root'],
+  [class*='-root '],
+  [class$='-shell'],
+  [class*='-shell '],
+  [class$='-wrapper'],
+  [class*='-wrapper '],
+  [class$='-content'],
+  [class*='-content '],
+  .panel-page-enter
+) {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+:where(
+  [class$='-page'],
+  [class$='-root'],
+  [class$='-shell'],
+  [class$='-wrapper'],
+  [class$='-content'],
+  .panel-page-enter
+) > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+:where(
+  .table-wrapper,
+  [class*='table-wrapper'],
+  [class*='drawer'],
+  [class*='modal']
+) {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+input {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+img,
+svg,
+canvas,
+video {
+  max-width: 100%;
+  height: auto;
+}
+
+:where(button, input, select, textarea) {
+  max-width: 100%;
+}
+
+.kuryon-compact :where(.page-card, .panel-card, .section-card, .courier-profile-card, .store-hero) {
+  padding: 16px !important;
+  border-radius: 16px !important;
+}
+
+.kuryon-glass-soft :where(.page-card, .panel-card, .section-card) {
+  background: linear-gradient(180deg, rgba(16, 23, 43, 0.9), rgba(13, 19, 37, 0.88)) !important;
+  backdrop-filter: blur(8px);
+}
+
+:where(.save-btn, .drawer-btn-primary, .modal-primary-btn, .pool-claim-btn, .primary-trip-btn) {
+  background: linear-gradient(135deg, var(--brand-accent-1), var(--brand-accent-2)) !important;
+}
+
+:where(.table-wrapper, .data-table, table) {
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  :where(
+    .stats-grid,
+    .dashboard-grid,
+    .content-grid,
+    .settings-grid,
+    .store-grid,
+    .report-grid,
+    .drawer-form-grid,
+    .form-grid
+  ) {
+    grid-template-columns: 1fr !important;
+  }
+
+  :where(.filter-chip, .tab-btn, .store-nav-btn, .mini-btn, .header-btn, .call-btn) {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 430px) {
+  :where(.dashboard-main, .page-main, .courier-page, .store-shell, .login-shell) {
+    padding: 12px !important;
+  }
+
+  :where(.page-card, .panel-card, .login-card, .store-hero, .courier-profile-card) {
+    padding: 14px !important;
+    border-radius: 16px !important;
+  }
+
+  :where(.toast-container) {
+    right: 10px !important;
+    left: 10px !important;
+    bottom: 10px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  :root {
+    --text-md: 13px;
+    --text-lg: 14px;
+  }
+}
+
+@media (max-width: 375px) {
+  :where(.topbar, .store-topbar) {
+    padding: 10px !important;
+  }
+}
+
+@media (max-width: 320px) {
+  :where(.login-card h1, .page-header h1, .header-text h1) {
+    font-size: 1.25rem !important;
+  }
+}

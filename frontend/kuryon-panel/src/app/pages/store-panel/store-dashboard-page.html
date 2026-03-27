@@ -1,0 +1,244 @@
+<div class="store-shell">
+  <div class="store-container panel-page-enter">
+    <header class="store-topbar">
+      <div class="store-topbar-left">
+        <div class="store-topbar-title">
+          <strong>Dükkan Paneli</strong>
+          <span>Mağaza ve sipariş yönetimi</span>
+        </div>
+      </div>
+      <div class="store-topbar-right">
+        <button class="store-logout-btn" type="button" (click)="logout()">
+          <span class="material-symbols-outlined">logout</span>
+          Çıkış Yap
+        </button>
+      </div>
+    </header>
+
+    <section class="store-hero">
+      <div class="brand-area">
+        <div class="brand-badge">K</div>
+        <div class="brand-copy">
+          <h1>Kanatçı Bahattin</h1>
+          <p>Sipariş, kurye ve operasyon akışını tek merkezden premium deneyimle yönetin.</p>
+        </div>
+      </div>
+      <button class="call-btn" type="button" (click)="callCourier()">
+        <span class="material-symbols-outlined">local_shipping</span>
+        Kurye Çağır
+      </button>
+    </section>
+
+    <nav class="store-nav">
+      <button
+        type="button"
+        class="store-nav-btn"
+        *ngFor="let tab of tabs; trackBy: trackByTab"
+        [class.active]="activeTab === tab"
+        (click)="selectTab(tab)"
+      >
+        {{ tab }}
+      </button>
+    </nav>
+
+    <div class="store-feedback" *ngIf="callFeedback" [class.error]="callFeedback.type === 'error'">
+      {{ callFeedback.text }}
+    </div>
+
+    <section class="store-grid store-home-view tab-content-panel" *ngIf="displayedTab === 'Anasayfa'">
+      <div class="left-column">
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h3>Operasyon Özeti</h3>
+              <p>Anlık sipariş ve teslimat görünümü.</p>
+            </div>
+            <span class="density-badge">● Aktif</span>
+          </div>
+          <div class="summary-grid">
+            <div class="summary-card" *ngFor="let card of summaryCardsData; trackBy: trackBySummaryCard">
+              <span>{{ card.title }}</span>
+              <strong>{{ card.value }}</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h3>Aktif Siparişler</h3>
+              <p>Teslim edilmemiş siparişlerin son durumu.</p>
+            </div>
+            <button type="button" class="mini-btn" (click)="refreshFromService()">Yenile</button>
+          </div>
+          <div class="order-table">
+            <div class="table-head">
+              <span>Süreler</span>
+              <span>Durumu</span>
+              <span>Kurye</span>
+              <span>Müşteri Bilgileri</span>
+              <span>Fiyat</span>
+              <span>Notunuz</span>
+            </div>
+            <div class="table-row" *ngFor="let item of orders; trackBy: trackByOrderId">
+              <span>{{ item.eta }}</span>
+              <span>{{ item.statusLabel }}</span>
+              <span>{{ item.courierLabel }}</span>
+              <span>{{ item.customer }}</span>
+              <span>{{ item.feeLabel }}</span>
+              <span>{{ item.paymentLabel }}</span>
+            </div>
+            <p *ngIf="orders.length === 0" class="store-empty-hint">Bu mağaza için sipariş bulunamadı.</p>
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-header">
+            <div>
+              <h3>Hızlı İşlemler</h3>
+              <p>Operasyon aksiyonlarını tek alanda yönetin.</p>
+            </div>
+          </div>
+          <div class="quick-actions">
+            <button type="button" class="mini-btn" (click)="callCourier()">Kurye Çağır</button>
+            <button type="button" class="mini-btn" (click)="refreshFromService()">Siparişleri Yenile</button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="panel-card store-tab-panel tab-content-panel" *ngIf="displayedTab === 'Siparişler'">
+      <div class="panel-header">
+        <div>
+          <h3>Sipariş Yönetimi</h3>
+          <p>Duruma göre filtrelenmiş sipariş listesi.</p>
+        </div>
+        <div class="filter-row">
+          <button type="button" class="mini-btn" [class.active-filter]="orderFilter === 'all'" (click)="setOrderFilter('all')">
+            Tümü
+          </button>
+          <button type="button" class="mini-btn" [class.active-filter]="orderFilter === 'Bekliyor'" (click)="setOrderFilter('Bekliyor')">
+            Bekliyor
+          </button>
+          <button type="button" class="mini-btn" [class.active-filter]="orderFilter === 'Yolda'" (click)="setOrderFilter('Yolda')">
+            Yolda
+          </button>
+          <button
+            type="button"
+            class="mini-btn"
+            [class.active-filter]="orderFilter === 'Teslim Edildi'"
+            (click)="setOrderFilter('Teslim Edildi')"
+          >
+            Teslim
+          </button>
+        </div>
+      </div>
+      <div class="order-table">
+        <div class="table-head">
+          <span>ID</span>
+          <span>Durum</span>
+          <span>Müşteri</span>
+          <span>Adres</span>
+          <span>Kurye</span>
+          <span>Tutar</span>
+        </div>
+        <div class="table-row" *ngFor="let item of visibleOrders; trackBy: trackByOrderId">
+          <span>{{ item.id }}</span>
+          <span>{{ item.statusLabel }}</span>
+          <span>{{ item.customer }}</span>
+          <span>{{ item.address }}</span>
+          <span>{{ item.courierLabel }}</span>
+          <span>{{ item.feeLabel }}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel-card store-tab-panel tab-content-panel" *ngIf="displayedTab === 'Müşterilerim'">
+      <div class="panel-header">
+        <div>
+          <h3>Müşteri Listesi</h3>
+          <p>Mağaza siparişlerinden oluşan müşteri özeti.</p>
+        </div>
+      </div>
+      <div class="list-grid">
+        <div class="list-card" *ngFor="let customer of customersData; trackBy: trackByCustomer">
+          <strong>{{ customer.name }}</strong>
+          <span>Sipariş: {{ customer.orderCount }}</span>
+          <span>Toplam: {{ customer.totalLabel }}</span>
+          <em>Son Durum: {{ customer.lastStatus }}</em>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel-card store-tab-panel tab-content-panel" *ngIf="displayedTab === 'Raporlar'">
+      <div class="panel-header">
+        <div>
+          <h3>Raporlar</h3>
+          <p>Günlük ve haftalık sipariş özeti.</p>
+        </div>
+      </div>
+      <div class="report-grid">
+        <div class="report-card">
+          <strong>Günlük</strong>
+          <span>Sipariş</span>
+          <b>{{ dailyReport.totalOrders }}</b>
+          <span>Teslim Edilen</span>
+          <em>{{ dailyReport.delivered }}</em>
+          <span>Toplam Tutar</span>
+          <em>{{ dailyReport.totalRevenueLabel }}</em>
+        </div>
+        <div class="report-card">
+          <strong>Haftalık</strong>
+          <span>Sipariş</span>
+          <b>{{ weeklyReport.totalOrders }}</b>
+          <span>Teslim Edilen</span>
+          <em>{{ weeklyReport.delivered }}</em>
+          <span>Toplam Tutar</span>
+          <em>{{ weeklyReport.totalRevenueLabel }}</em>
+        </div>
+        <div class="report-card" *ngFor="let card of reportCards; trackBy: trackByReportCard">
+          <strong>{{ card.title }}</strong>
+          <span>İşlem Sayısı</span>
+          <b>{{ card.count }}</b>
+          <span>Toplam Tutar</span>
+          <em>{{ card.total }}</em>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel-card store-tab-panel tab-content-panel" *ngIf="displayedTab === 'Yorumlar'">
+      <div class="panel-header">
+        <div>
+          <h3>Müşteri Yorumları</h3>
+          <p>Teslim edilen siparişler üzerinden oluşturulan güncel geri bildirim akışı.</p>
+        </div>
+      </div>
+      <div class="list-grid" *ngIf="commentsData.length > 0; else emptyComments">
+        <div class="list-card" *ngFor="let comment of commentsData; trackBy: trackByComment">
+          <strong>{{ comment.customer }}</strong>
+          <span>{{ comment.text }}</span>
+          <em>Durum: Olumlu</em>
+        </div>
+      </div>
+      <ng-template #emptyComments>
+        <p class="store-empty-hint">Henüz teslim edilen sipariş yorumu bulunmuyor.</p>
+      </ng-template>
+    </section>
+
+    <section class="panel-card store-tab-panel tab-content-panel" *ngIf="displayedTab === 'Performans'">
+      <div class="panel-header">
+        <div>
+          <h3>Performans</h3>
+          <p>Mağaza operasyon verimliliği kartları.</p>
+        </div>
+      </div>
+      <div class="summary-grid">
+        <div class="summary-card" *ngFor="let card of performanceCardsData; trackBy: trackBySummaryCard">
+          <span>{{ card.title }}</span>
+          <strong>{{ card.value }}</strong>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

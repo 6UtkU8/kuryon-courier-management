@@ -1,0 +1,81 @@
+.panel-card {
+  background: rgba(21, 28, 49, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  padding: 18px;
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 16px;
+  min-width: 0;
+}
+
+.panel-header h3 {
+  margin: 0;
+  color: #eef4ff;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.panel-header p {
+  margin: 6px 0 0;
+  color: #8ea0be;
+  font-size: 13px;
+}
+
+.panel-body {
+  min-width: 0;
+}
+
+.panel-header-trailing {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  max-width: min(100%, 340px);
+}
+
+.mini-btn {
+  min-height: 38px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+  color: #dbe7fb;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.panel-heading {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.panel-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.panel-title-row h3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.panel-icon {
+  font-size: 20px;
+  color: #21c7b7;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  flex-shrink: 0;
+}

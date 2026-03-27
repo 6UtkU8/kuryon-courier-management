@@ -1,0 +1,12 @@
+<div class="admin-shell" [class.sidebar-collapsed]="sidebarCollapsed">
+  <app-sidebar [collapsed]="sidebarCollapsed" [mobileOpen]="mobileSidebarOpen"></app-sidebar>
+
+  @if (mobileSidebarOpen) {
+    <div class="mobile-overlay" (click)="closeMobileSidebar()"></div>
+  }
+
+  <main class="admin-main">
+    <app-topbar (toggleSidebar)="toggleSidebar()"></app-topbar>
+    <router-outlet></router-outlet>
+  </main>
+</div>

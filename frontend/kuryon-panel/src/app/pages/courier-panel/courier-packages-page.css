@@ -1,0 +1,435 @@
+.section-card,
+.history-modal {
+  padding: 20px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(16, 23, 43, 0.98), rgba(13, 19, 37, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.13);
+}
+
+.section-title {
+  margin-bottom: 18px;
+}
+
+.section-title h3 {
+  margin: 0 0 8px;
+  color: #ffffff;
+  font-size: 24px;
+}
+
+.section-title p {
+  margin: 0;
+  color: #8ea1c4;
+}
+
+.history-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.history-card {
+  padding: 18px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(10, 70, 46, 0.96), rgba(9, 58, 40, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition:
+    box-shadow 0.24s ease,
+    border-color 0.24s ease;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  contain: content;
+  content-visibility: auto;
+  contain-intrinsic-size: 320px;
+}
+
+.history-card:hover {
+  border-color: rgba(255, 255, 255, 0.10);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.history-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.history-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  font-size: 22px;
+  font-weight: 800;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.14);
+}
+
+.history-brand-info h4 {
+  margin: 0 0 6px;
+  color: #ffffff;
+}
+
+.history-brand-info p {
+  margin: 0;
+  color: #8ea1c4;
+  word-break: break-word;
+}
+
+.history-meta {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: #dce7f7;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.history-line-note {
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(250, 204, 21, 0.24);
+  background: linear-gradient(145deg, rgba(250, 204, 21, 0.14), rgba(250, 204, 21, 0.06));
+  color: #fdf5d6;
+}
+
+.history-note-details {
+  margin-top: 6px;
+}
+
+.history-note-details summary {
+  cursor: pointer;
+  color: #fde68a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.history-note-full {
+  margin-top: 6px;
+  color: #fef9c3;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.history-legs {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.history-legs__head {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+  margin-bottom: 10px;
+}
+
+.history-legs__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 14px;
+}
+
+.history-legs__grid--compact {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 10px;
+}
+
+.history-leg {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.history-leg__label,
+.history-leg__value {
+  word-break: break-word;
+}
+
+.history-leg__label {
+  font-size: 11px;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+
+.history-leg__value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f1f5f9;
+  font-variant-numeric: tabular-nums;
+}
+
+.history-modal-legs {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 520px) {
+  .history-legs__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.history-actions button {
+  min-height: 42px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4c84ff, #3873f0);
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s ease,
+    opacity 0.22s ease;
+}
+
+.history-actions button:hover {
+  box-shadow: 0 6px 12px rgba(56, 115, 240, 0.14);
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.62);
+  z-index: 1;
+}
+
+.history-modal-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 1250;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+}
+
+.history-modal {
+  position: relative;
+  width: min(100%, 520px);
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  animation: modalPop 0.16s ease;
+  z-index: 2;
+  overscroll-behavior: contain;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.22);
+}
+
+.history-modal-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.history-modal-header h3 {
+  margin: 0 0 8px;
+  color: #ffffff;
+}
+
+.history-modal-header p {
+  margin: 0;
+  color: #8ea1c4;
+}
+
+.modal-close-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.history-modal-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.history-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.history-form-group label {
+  color: #cdd9ef;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.history-form-group input,
+.history-form-group select {
+  width: 100%;
+  height: 46px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #111a31;
+  color: #eef4ff;
+  padding: 0 14px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.history-form-group input:focus,
+.history-form-group select:focus {
+  border-color: rgba(125, 211, 252, 0.45);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
+}
+
+.history-form-group-select {
+  position: relative;
+}
+
+.payment-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 38px;
+  min-height: 46px;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(26, 36, 62, 0.9), rgba(16, 24, 44, 0.9)),
+    linear-gradient(135deg, rgba(33, 199, 183, 0.08), rgba(123, 97, 255, 0.08));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 8px 18px rgba(7, 12, 25, 0.2);
+  color: #f1f5f9;
+}
+
+.payment-select:focus {
+  border-color: rgba(33, 199, 183, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 0 0 3px rgba(33, 199, 183, 0.12);
+}
+
+.payment-select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 12px;
+  top: calc(50% + 11px);
+  transform: translateY(-50%);
+  color: #9fb0cf;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.payment-select option {
+  background: #111a31;
+  color: #eef4ff;
+}
+
+.history-modal-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.modal-primary-btn,
+.modal-secondary-btn {
+  flex: 1;
+  min-height: 48px;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.modal-primary-btn:hover,
+.modal-secondary-btn:hover {
+  opacity: 0.95;
+}
+
+.modal-primary-btn {
+  border: none;
+  color: #ffffff;
+  background: linear-gradient(135deg, #2f6aff, #245de8);
+}
+
+.modal-secondary-btn {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: #dbe7fb;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpSoft {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalPop {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .history-modal-form,
+  .history-modal-actions {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .history-form-group-select::after {
+    top: calc(50% + 12px);
+  }
+}
+
+@media (min-width: 768px) {
+  .history-list--responsive {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .history-list--responsive {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

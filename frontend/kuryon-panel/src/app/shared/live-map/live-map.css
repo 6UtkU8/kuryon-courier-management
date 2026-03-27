@@ -1,0 +1,184 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.live-map-shell {
+  width: 100%;
+  min-height: 360px;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: radial-gradient(circle at top right, rgba(124, 156, 255, 0.08), rgba(13, 19, 37, 0.96) 42%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 16px 32px rgba(0, 0, 0, 0.22);
+}
+
+.live-map-container {
+  width: 100%;
+  height: clamp(340px, 42vh, 440px);
+}
+
+:host ::ng-deep .leaflet-control-zoom {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.22);
+}
+
+:host ::ng-deep .leaflet-control-zoom a {
+  background: rgba(17, 24, 39, 0.86);
+  color: #dbe7fb;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+:host ::ng-deep .leaflet-control-zoom a:hover {
+  background: rgba(37, 52, 80, 0.94);
+}
+
+:host ::ng-deep .live-map-marker-wrap {
+  background: transparent;
+  border: none;
+}
+
+:host ::ng-deep .live-map-marker {
+  position: relative;
+  display: inline-flex;
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  box-shadow:
+    0 0 0 1px rgba(9, 15, 29, 0.85),
+    0 8px 18px rgba(0, 0, 0, 0.28);
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease,
+    border-color 0.14s ease;
+}
+
+:host ::ng-deep .live-map-marker__dot {
+  width: 34%;
+  height: 34%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+:host ::ng-deep .live-map-marker__pulse {
+  position: absolute;
+  inset: -8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  opacity: 0;
+}
+
+:host ::ng-deep .live-map-marker--courier {
+  background: linear-gradient(145deg, #1f9cff, #2563eb);
+}
+
+:host ::ng-deep .live-map-marker--active-courier {
+  background: linear-gradient(145deg, #22c55e, #0ea5a4);
+}
+
+:host ::ng-deep .live-map-marker--order-point {
+  background: linear-gradient(145deg, #f59e0b, #f97316);
+}
+
+:host ::ng-deep .live-map-marker--delivered-point {
+  background: linear-gradient(145deg, #14b8a6, #10b981);
+}
+
+:host ::ng-deep .leaflet-marker-icon:hover .live-map-marker {
+  transform: translateY(-1px) scale(1.05);
+  box-shadow:
+    0 0 0 1px rgba(9, 15, 29, 0.85),
+    0 10px 20px rgba(0, 0, 0, 0.34);
+}
+
+:host ::ng-deep .leaflet-marker-icon.is-selected .live-map-marker {
+  border-color: #fef3c7;
+  box-shadow:
+    0 0 0 1px rgba(9, 15, 29, 0.85),
+    0 0 0 7px rgba(251, 191, 36, 0.16),
+    0 12px 22px rgba(0, 0, 0, 0.38);
+}
+
+:host ::ng-deep .leaflet-marker-icon.is-selected .live-map-marker__pulse {
+  opacity: 1;
+}
+
+:host ::ng-deep .live-map-popup .leaflet-popup-content-wrapper {
+  background: rgba(12, 19, 34, 0.96);
+  color: #e8f1ff;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.32);
+}
+
+:host ::ng-deep .live-map-popup .leaflet-popup-tip {
+  background: rgba(12, 19, 34, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+:host ::ng-deep .live-map-popup .leaflet-popup-content {
+  margin: 0;
+  width: min(260px, 72vw) !important;
+}
+
+:host ::ng-deep .live-map-popup-card {
+  padding: 12px;
+}
+
+:host ::ng-deep .live-map-popup__header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+:host ::ng-deep .live-map-popup__header strong {
+  font-size: 14px;
+  color: #f8fbff;
+  line-height: 1.2;
+}
+
+:host ::ng-deep .live-map-popup__header span {
+  font-size: 12px;
+  color: #9cb2d8;
+}
+
+:host ::ng-deep .live-map-popup__body {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+:host ::ng-deep .live-map-popup__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+}
+
+:host ::ng-deep .live-map-popup__row span {
+  color: #95a8c8;
+}
+
+:host ::ng-deep .live-map-popup__row strong {
+  color: #e6f0ff;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .live-map-shell {
+    border-radius: 18px;
+  }
+
+  .live-map-container {
+    height: 320px;
+  }
+}

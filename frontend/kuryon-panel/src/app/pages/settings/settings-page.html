@@ -1,0 +1,232 @@
+<div class="panel-page-enter settings-page">
+  <section class="settings-shell">
+    <header class="page-head">
+      <div>
+        <h1>Sistem Ayarları</h1>
+        <p>Modüler ayar altyapısı ile admin, kurye ve operasyon akışını tek merkezden yönetin.</p>
+      </div>
+      <div class="head-actions">
+        <button type="button" class="btn ghost" (click)="resetAll()">Sıfırla</button>
+        <button type="button" class="btn primary" [disabled]="!isDirty" (click)="saveAll()">Tümünü Kaydet</button>
+      </div>
+    </header>
+
+    <div class="layout-grid">
+      <aside class="category-menu">
+        <div class="category-menu-inner">
+          <button
+            *ngFor="let category of categories; trackBy: trackByCategory"
+            type="button"
+            class="category-btn"
+            [class.active]="selectedCategory === category.id"
+            (click)="selectCategory(category.id)"
+          >
+            <span class="material-symbols-outlined">{{ category.icon }}</span>
+            <span class="category-meta">
+              <strong>{{ category.title }}</strong>
+              <small>{{ category.hint }}</small>
+            </span>
+          </button>
+        </div>
+      </aside>
+
+      <section class="content-column">
+        <div class="content-header">
+          <h2>{{ activeCategoryRef.title }}</h2>
+          <span>Son güncelleme: {{ updatedAtLabel }}</span>
+        </div>
+
+        @if (activeCategoryRef.id === 'directors') {
+          <article class="helper-card">
+            <strong>Direktörler ve Yetkiler</strong>
+            <p>Direktörlerin erişimini, rolünü ve çalışma durumunu tek yerden yönetin.</p>
+          </article>
+          <section class="directors-card">
+            <header class="directors-head">
+              <div>
+                <h3>Direktörler ve Yetkiler</h3>
+                <p>Aktif yöneticiler ve yetki dağılımı</p>
+              </div>
+              <div class="directors-actions">
+                <button type="button" class="btn ghost" (click)="showFormerDirectorsModal = true">İşten Çıkan Direktörler</button>
+                <button type="button" class="btn primary" (click)="openNewDirectorModal()">Yeni Direktör Ekle</button>
+              </div>
+            </header>
+            <div class="table-wrapper directors-table-wrap">
+              <table class="directors-table">
+                <thead>
+                  <tr>
+                    <th>Ad Soyad</th>
+                    <th>E-posta</th>
+                    <th>Telefon</th>
+                    <th>Mesai Durumu</th>
+                    <th>Yetkiler</th>
+                    <th>Çalışma Durumu</th>
+                    <th>İşlemler</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let director of activeDirectors; trackBy: trackByDirector">
+                    <td>
+                      <div class="director-name-cell">
+                        <strong>{{ director.fullName }}</strong>
+                        @if (currentDirectorId === director.id) {
+                          <span class="current-chip">Aktif Oturum</span>
+                        }
+                      </div>
+                    </td>
+                    <td>{{ director.email }}</td>
+                    <td>{{ director.phone }}</td>
+                    <td class="status-cell-col">
+                      <div class="status-cell">
+                        <div class="select-wrap compact custom-select-wrap">
+                          <app-overlay-select
+                            [ariaLabel]="'Mesai durumu secimi: ' + director.fullName"
+                            [options]="shiftStatusSelectOptions"
+                            [value]="director.shiftStatus"
+                            [panelMaxHeight]="200"
+                            (valueChange)="updateShiftStatus(director.id, $event)"
+                          />
+                        </div>
+                        <span class="small-badge shift-badge" [ngClass]="getShiftBadgeClass(director.shiftStatus)">{{ director.shiftStatus }}</span>
+                      </div>
+                    </td>
+                    <td><span class="small-muted">{{ director.permissions.length }} yetki</span></td>
+                    <td><span class="small-badge" [ngClass]="getEmploymentBadgeClass(director.employmentStatus)">{{ director.employmentStatus }}</span></td>
+                    <td>
+                      <div class="row-actions">
+                        <button type="button" class="icon-btn" (click)="openPermissionModal(director)">
+                          <span class="material-symbols-outlined">security</span>
+                        </button>
+                        <button type="button" class="icon-btn" (click)="setCurrentDirector(director.id)">
+                          <span class="material-symbols-outlined">person_check</span>
+                        </button>
+                        <button type="button" class="icon-btn" (click)="setEmploymentStatus(director.id, 'Pasif')">
+                          <span class="material-symbols-outlined">person_off</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        } @else {
+          <article class="helper-card">
+            <strong>Ortak yapılandırma katmanı aktif</strong>
+            <p>Buradaki değişiklikler merkezi ayar servisine yazılır ve localStorage'a kaydedilir.</p>
+          </article>
+          <section class="settings-section-card" *ngFor="let section of activeCategoryRef.sections; trackBy: trackBySection">
+            <header class="section-head">
+              <div>
+                <h3>{{ section.title }}</h3>
+                <p>{{ section.subtitle }}</p>
+              </div>
+            </header>
+            <div class="setting-row" *ngFor="let item of section.items; trackBy: trackBySettingsItem">
+              <div class="setting-info">
+                <strong>{{ item.label }}</strong>
+                <p>{{ item.description }}</p>
+              </div>
+              <div class="setting-control" [ngSwitch]="item.type">
+                <label class="switch" *ngSwitchCase="'toggle'">
+                  <input type="checkbox" [disabled]="isFinanceReadonly" [ngModel]="itemValueMap[item.key]" (ngModelChange)="onItemValueChange(item, $event)" />
+                  <span class="slider"></span>
+                </label>
+                <app-overlay-select
+                  *ngSwitchCase="'select'"
+                  [disabled]="isFinanceReadonly"
+                  [ariaLabel]="item.label"
+                  [options]="item.options || []"
+                  [value]="$any(itemValueMap[item.key])"
+                  (valueChange)="onItemValueChange(item, $event)"
+                />
+                <div class="number-wrap" *ngSwitchCase="'number'">
+                  <input type="number" [disabled]="isFinanceReadonly" [min]="item.min ?? null" [max]="item.max ?? null" [step]="item.step || 1" [ngModel]="itemValueMap[item.key]" (ngModelChange)="onItemValueChange(item, +$event)" />
+                  <span class="suffix" *ngIf="item.suffix">{{ item.suffix }}</span>
+                  <button type="button" class="mini-save" [disabled]="isFinanceReadonly" *ngIf="item.hasQuickSave" (click)="quickSave(item)">Kaydet</button>
+                </div>
+                <input *ngSwitchCase="'text'" type="text" [disabled]="isFinanceReadonly" [ngModel]="itemValueMap[item.key]" (ngModelChange)="onItemValueChange(item, $event)" />
+                <span class="info-tag" *ngSwitchCase="'info'">{{ itemValueMap[item.key] }}</span>
+              </div>
+            </div>
+          </section>
+        }
+      </section>
+    </div>
+  </section>
+
+  @if (showPermissionModal && selectedDirectorForPermission) {
+    <div class="modal-overlay" (click)="closePermissionModal()"></div>
+    <section class="modal-card permission-modal">
+      <header class="modal-head">
+        <div class="modal-title-wrap">
+          <h3>Yetki Düzenle</h3>
+          <p>{{ selectedDirectorForPermission.fullName }}</p>
+        </div>
+        <button type="button" class="icon-btn" (click)="closePermissionModal()"><span class="material-symbols-outlined">close</span></button>
+      </header>
+      <div class="modal-body">
+        <section class="permission-group" *ngFor="let category of permissionCategories; trackBy: trackByPermissionCategory">
+          <h4 class="permission-group-title">{{ category.title }}</h4>
+          <div class="permission-grid">
+            <label class="permission-item" *ngFor="let permission of category.permissions; trackBy: trackByPermission">
+              <input class="permission-checkbox" type="checkbox" [checked]="hasDraftPermission(permission.key)" (change)="onDraftPermissionChange(permission.key, $any($event.target).checked)" />
+              <span class="permission-label">{{ permission.label }}</span>
+            </label>
+          </div>
+        </section>
+      </div>
+      <footer class="modal-footer">
+        <div class="modal-footer-actions">
+          <button type="button" class="btn ghost" (click)="closePermissionModal()">Kapat</button>
+          <button type="button" class="btn primary" (click)="saveDirectorPermissions()">Kaydet</button>
+        </div>
+      </footer>
+    </section>
+  }
+
+  @if (showFormerDirectorsModal) {
+    <div class="modal-overlay" (click)="showFormerDirectorsModal = false"></div>
+    <section class="modal-card medium-modal">
+      <header class="modal-head"><h3>İşten Çıkan ve Pasif Direktörler</h3></header>
+      <div class="modal-body">
+        <div class="former-row" *ngFor="let director of formerDirectors; trackBy: trackByDirector">
+          <div>
+            <strong>{{ director.fullName }}</strong>
+            <p>{{ director.email }} - {{ director.phone }}</p>
+          </div>
+          <div class="row-actions">
+            <span class="small-badge" [ngClass]="getEmploymentBadgeClass(director.employmentStatus)">{{ director.employmentStatus }}</span>
+            <button type="button" class="btn ghost mini-btn" (click)="setEmploymentStatus(director.id, 'Aktif')">Tekrar Aktif Et</button>
+          </div>
+        </div>
+      </div>
+      <footer class="modal-footer"><button type="button" class="btn ghost" (click)="showFormerDirectorsModal = false">Kapat</button></footer>
+    </section>
+  }
+
+  @if (showNewDirectorModal) {
+    <div class="modal-overlay" (click)="closeNewDirectorModal()"></div>
+    <section class="modal-card medium-modal">
+      <header class="modal-head"><h3>Yeni Direktör Ekle</h3></header>
+      <div class="modal-body new-director-form">
+        <label><span>Ad Soyad</span><input type="text" [(ngModel)]="newDirector.fullName" /></label>
+        <label><span>E-posta</span><input type="email" [(ngModel)]="newDirector.email" /></label>
+        <label><span>Telefon</span><input type="text" [(ngModel)]="newDirector.phone" /></label>
+      </div>
+      <footer class="modal-footer">
+        <button type="button" class="btn ghost" (click)="closeNewDirectorModal()">Kapat</button>
+        <button type="button" class="btn primary" (click)="createDirector()">Kaydet</button>
+      </footer>
+    </section>
+  }
+
+  @if (showToast) {
+    <div class="toast-container">
+      <div class="toast-message" [class.toast-success]="toastType === 'success'" [class.toast-info]="toastType === 'info'" [class.toast-error]="toastType === 'error'">
+        <span class="toast-text">{{ toastMessage }}</span>
+      </div>
+    </div>
+  }
+</div>

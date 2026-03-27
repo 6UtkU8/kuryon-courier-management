@@ -1,0 +1,63 @@
+<aside
+  class="sidebar"
+  [class.collapsed]="collapsed"
+  [class.mobile-open]="mobileOpen"
+>
+  <div class="sidebar-inner">
+    <div class="sidebar-brand">
+      <div class="brand-logo">K</div>
+
+      @if (!collapsed) {
+        <div class="brand-text">
+          <strong>Kuryon</strong>
+          <span>Operasyon Paneli</span>
+        </div>
+      }
+    </div>
+
+    <nav class="sidebar-nav sidebar-nav-main" aria-label="Ana menü">
+      <a
+        *ngFor="let item of visibleMainMenuItems; trackBy: trackByRoute"
+        class="nav-item"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="item.route === '/dashboard' ? dashboardRouteActiveOptions : defaultRouteActiveOptions"
+      >
+        <span class="material-symbols-outlined nav-icon">{{ item.icon }}</span>
+
+        @if (!collapsed) {
+          <span class="nav-label">{{ item.label }}</span>
+        }
+      </a>
+
+      @if (canOpenNewOrderAction) {
+        <button
+          type="button"
+          class="nav-item nav-item-cta"
+          (click)="openNewOrderDrawer()"
+        >
+          <span class="material-symbols-outlined nav-icon">add_circle</span>
+          @if (!collapsed) {
+            <span class="nav-label">Yeni Sipariş Oluştur</span>
+          }
+        </button>
+      }
+    </nav>
+
+    <nav class="sidebar-nav sidebar-nav-bottom" aria-label="Alt menü">
+      @if (canViewSettings) {
+        <a
+          class="nav-item"
+          [routerLink]="settingsItem.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="dashboardRouteActiveOptions"
+        >
+          <span class="material-symbols-outlined nav-icon">{{ settingsItem.icon }}</span>
+          @if (!collapsed) {
+            <span class="nav-label">{{ settingsItem.label }}</span>
+          }
+        </a>
+      }
+    </nav>
+  </div>
+</aside>

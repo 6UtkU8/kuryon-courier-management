@@ -1,0 +1,16 @@
+<div class="global-critical-banner" *ngIf="criticalMessage$ | async as criticalMessage">
+  {{ criticalMessage }}
+</div>
+<div class="global-toast-wrap" *ngIf="toast$ | async as toast">
+  <div
+    class="global-toast"
+    [class.global-toast-success]="toast.type === 'success'"
+    [class.global-toast-error]="toast.type === 'error'"
+    [class.global-toast-info]="toast.type === 'info'"
+  >
+    <span>{{ toast.message }}</span>
+    <button type="button" class="global-toast-close" (click)="dismissToast(toast.id)">×</button>
+  </div>
+</div>
+<router-outlet></router-outlet>
+<app-admin-new-order-drawer></app-admin-new-order-drawer>

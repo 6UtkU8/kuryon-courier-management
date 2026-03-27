@@ -1,0 +1,81 @@
+@if (detail(); as d) {
+  <div class="day-report panel-page-enter">
+    <a class="day-report-back" routerLink="/courier-panel/reports">
+      <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+      Raporlara dön
+    </a>
+
+    <header class="day-report-header">
+      <h2>{{ d.label }}</h2>
+      <p class="day-report-sub">Gün bazlı teslimat ve ödeme özeti</p>
+    </header>
+
+    <section class="day-report-summary section-card-like">
+      <div class="day-report-summary-row day-report-summary-row--total">
+        <span>Toplam tutar</span>
+        <strong>{{ d.breakdown.totalLabel }}</strong>
+      </div>
+      <div class="day-report-summary-row">
+        <span class="report-detail-dot report-detail-dot--cash"></span>
+        <span>Nakit</span>
+        <strong>{{ d.breakdown.cashLabel }}</strong>
+      </div>
+      <div class="day-report-summary-row">
+        <span class="report-detail-dot report-detail-dot--card"></span>
+        <span>Kart</span>
+        <strong>{{ d.breakdown.cardLabel }}</strong>
+      </div>
+      <div class="day-report-summary-row day-report-summary-row--muted">
+        <span>Toplam paket</span>
+        <strong>{{ d.breakdown.packageCount }}</strong>
+      </div>
+    </section>
+
+    <section class="day-report-packages">
+      <h3>Paket detayları</h3>
+
+      @if (d.orders.length === 0) {
+        <p class="day-report-empty">Bu gün için teslim kaydı bulunamadı.</p>
+      } @else {
+        <div class="day-report-table-wrap">
+          <table class="day-report-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Firma</th>
+                <th>Müşteri</th>
+                <th>Ücret</th>
+                <th>Ödeme</th>
+                <th>Teslimat Notu</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (o of d.orders; track o.id) {
+                <tr>
+                  <td>{{ o.id }}</td>
+                  <td>{{ o.company }}</td>
+                  <td>{{ o.customer }}</td>
+                  <td>{{ o.feeLabel }}</td>
+                  <td>{{ o.paymentType ?? '—' }}</td>
+                  <td>
+                    @if (o.hasDeliveryNote) {
+                      <div class="day-note-preview">{{ o.deliveryNotePreview }}</div>
+                      @if (o.deliveryNoteFull !== o.deliveryNotePreview) {
+                        <details class="day-note-details">
+                          <summary>Tüm notu gör</summary>
+                          <div class="day-note-full">{{ o.deliveryNoteFull }}</div>
+                        </details>
+                      }
+                    } @else {
+                      —
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+  </div>
+}

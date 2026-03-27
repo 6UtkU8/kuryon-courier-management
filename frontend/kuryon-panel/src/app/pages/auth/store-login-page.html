@@ -1,0 +1,53 @@
+<div class="login-shell">
+  <div class="login-card">
+    <a class="back-link" routerLink="/login-select">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Geri Dön
+    </a>
+
+    <div class="login-badge store">
+      <span class="material-symbols-outlined">storefront</span>
+    </div>
+
+    <h1>Dükkan Girişi</h1>
+    <p>Dükkan paneline erişmek için giriş yap.</p>
+
+    <form class="login-form" (ngSubmit)="login()">
+      <div class="form-group">
+        <label>Telefon Numarası</label>
+        <input
+          id="store-phone-input"
+          type="text"
+          [(ngModel)]="phone"
+          name="phone"
+          placeholder="05xx xxx xx xx"
+          autocomplete="tel"
+          [class.input-invalid]="!!fieldErrors.phone"
+        />
+        <small class="field-error" *ngIf="fieldErrors.phone">{{ fieldErrors.phone }}</small>
+      </div>
+
+      <div class="form-group">
+        <label>Şifre</label>
+        <input
+          id="store-password-input"
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          [class.input-invalid]="!!fieldErrors.password"
+        />
+        <small class="field-error" *ngIf="fieldErrors.password">{{ fieldErrors.password }}</small>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        Dükkan Paneline Gir
+      </button>
+
+      <p *ngIf="errorMessage" class="form-error">
+        {{ errorMessage }}
+      </p>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,136 @@
+<div class="home-page">
+  <header class="navbar" [class.scrolled]="isScrolled">
+    <div class="nav-left">
+      <div class="logo-badge">K</div>
+      <div class="logo-text">
+        <strong>Kuryon</strong>
+        <span>Akıllı Kurye Yönetimi</span>
+      </div>
+    </div>
+
+    <nav class="nav-links">
+      <a href="#hero">Anasayfa</a>
+      <a href="#about">Hakkımızda</a>
+      <a href="#references">Referanslar</a>
+      <a href="#application">Kurye Başvurusu</a>
+    </nav>
+
+    <div class="nav-actions">
+      <a class="login-btn" routerLink="/login-select">Giriş Yap</a>
+    </div>
+  </header>
+
+  <section class="hero-section" id="hero">
+    <img class="hero-bg-image" src="/assets/images/hero-bg.png" alt="" aria-hidden="true" />
+    <div class="hero-overlay"></div>
+
+    <div class="hero-container">
+      <div class="hero-left">
+        <span class="hero-badge">Yeni Nesil Kurye Platformu</span>
+        <h1 class="hero-title">Kurye operasyonlarını tek panelden yönet.</h1>
+        <p>
+          Kuryon ile siparişlerini, kuryelerini ve teslimat süreçlerini canlı harita
+          desteğiyle kolayca yönetebilirsin.
+        </p>
+      </div>
+
+      <div class="hero-right">
+        <div class="hero-card">
+          <div class="hero-stat">
+            <strong>1.248+</strong>
+            <span>Aylık Sipariş</span>
+          </div>
+          <div class="hero-stat">
+            <strong>96.8%</strong>
+            <span>Teslim Başarısı</span>
+          </div>
+          <div class="hero-stat">
+            <strong>28 dk</strong>
+            <span>Ortalama Teslimat</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <div class="section-header">
+      <h2>Hakkımızda</h2>
+      <p>Kuryon, firma ve kurye yönetimini modern bir arayüzde birleştirir.</p>
+    </div>
+
+    <div class="info-grid">
+      <article class="info-card">
+        <span class="material-symbols-outlined">dashboard</span>
+        <h3>Merkezi Yönetim</h3>
+        <p>Sipariş, kurye ve operasyon süreçlerini tek panelden kontrol et.</p>
+      </article>
+
+      <article class="info-card">
+        <span class="material-symbols-outlined">map</span>
+        <h3>Canlı Harita</h3>
+        <p>Kuryelerin konumunu ve teslimat durumlarını anlık olarak takip et.</p>
+      </article>
+
+      <article class="info-card">
+        <span class="material-symbols-outlined">bar_chart</span>
+        <h3>Raporlama</h3>
+        <p>Günlük, haftalık ve aylık operasyon verilerini kolayca analiz et.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="references">
+    <div class="section-header">
+      <h2>Referanslar</h2>
+      <p>Farklı sektörlerden işletmeler için esnek teslimat çözümleri.</p>
+    </div>
+
+    <div class="reference-grid">
+      <div class="reference-card">Burger House</div>
+      <div class="reference-card">Kahve Durağı</div>
+      <div class="reference-card">Pizza Stop</div>
+      <div class="reference-card">Döner Express</div>
+    </div>
+  </section>
+
+  <section class="section application-section" id="application">
+    <div class="section-header">
+      <h2>Kurye Başvurusu</h2>
+      <p>Kuryon ekibine katılmak için hızlı başvuru sürecini başlat.</p>
+    </div>
+
+    <div class="application-box">
+      <p>
+        Kuryon kurye ağına katılarak aktif teslimat alabilir, performansını takip
+        edebilir ve güçlü bir operasyon sisteminin parçası olabilirsin.
+      </p>
+      <a class="primary-btn" routerLink="/courier-login">Kurye Girişi</a>
+    </div>
+  </section>
+
+  <section class="section direct-login-section">
+    <div class="section-header">
+      <h2>Hızlı Erişim</h2>
+      <p>Doğrudan ilgili panele geçiş yapabilirsin.</p>
+    </div>
+
+    <div class="quick-login-grid">
+      <a class="quick-login-card" routerLink="/dashboard">
+        <span class="material-symbols-outlined">apartment</span>
+        <strong>Admin Paneli</strong>
+        <small>Firma yönetim ekranına git</small>
+      </a>
+
+      <a class="quick-login-card" routerLink="/courier-panel">
+        <span class="material-symbols-outlined">two_wheeler</span>
+        <strong>Kurye Paneli</strong>
+        <small>Kurye ekranına git</small>
+      </a>
+    </div>
+  </section>
+
+  <button class="scroll-top-btn" type="button" (click)="scrollToTop()" *ngIf="isScrolled">
+    ↑
+  </button>
+</div>

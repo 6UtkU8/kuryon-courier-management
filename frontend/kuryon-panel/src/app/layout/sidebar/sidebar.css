@@ -1,0 +1,197 @@
+:host {
+  display: block;
+  height: 100%;
+  align-self: stretch;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+:host {
+  --sidebar-item-height: 52px;
+  --sidebar-item-padding-x: 16px;
+  --sidebar-item-radius: 14px;
+}
+
+.sidebar {
+  position: relative;
+  height: 100%;
+  min-height: 100vh;
+  padding: 18px 14px;
+  background: linear-gradient(180deg, #0d1427, #0a1020);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  transition: transform 0.25s ease;
+  width: 100%;
+  max-width: 260px;
+  min-width: 0;
+  z-index: 1200;
+  box-sizing: border-box;
+  will-change: transform;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar.collapsed {
+  width: 100%;
+}
+
+.sidebar-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  margin-bottom: 16px;
+  padding: 8px 10px;
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  color: #ffffff;
+  background: linear-gradient(135deg, var(--brand-accent-1), var(--brand-accent-2));
+  flex-shrink: 0;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-text strong {
+  color: #f8fbff;
+  font-size: 15px;
+}
+
+.brand-text span {
+  color: #8ea1c4;
+  font-size: 12px;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-nav-main {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 8px;
+}
+
+.sidebar-nav-bottom {
+  flex: 0 0 auto;
+  flex-shrink: 0;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.nav-item {
+  height: var(--sidebar-item-height);
+  min-height: var(--sidebar-item-height);
+  padding: 0 var(--sidebar-item-padding-x);
+  border-radius: var(--sidebar-item-radius);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  line-height: 1.2;
+  text-decoration: none;
+  color: #b8c7e0;
+  transition: background-color 0.16s ease, color 0.16s ease;
+  border: 1px solid transparent;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+}
+
+.nav-item.active {
+  height: var(--sidebar-item-height);
+  min-height: var(--sidebar-item-height);
+  padding: 0 var(--sidebar-item-padding-x);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  border-radius: var(--sidebar-item-radius);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--brand-accent-1) 22%, transparent), color-mix(in srgb, var(--brand-accent-2) 22%, transparent));
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nav-item-cta {
+  height: var(--sidebar-item-height);
+  min-height: var(--sidebar-item-height);
+  padding: 0 var(--sidebar-item-padding-x);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  border-radius: var(--sidebar-item-radius);
+  border: 1px dashed color-mix(in srgb, var(--brand-accent-1) 35%, transparent);
+  background: color-mix(in srgb, var(--brand-accent-1) 10%, transparent);
+}
+
+.nav-item-cta:hover {
+  background: color-mix(in srgb, var(--brand-accent-1) 18%, transparent);
+}
+
+.nav-item-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.nav-icon {
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.nav-label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 992px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    transform: translateX(-100%);
+    width: 260px;
+    box-shadow: 10px 0 22px rgba(0, 0, 0, 0.2);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar.collapsed {
+    width: 260px;
+  }
+}

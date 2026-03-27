@@ -1,0 +1,53 @@
+<div class="login-shell">
+  <div class="login-card">
+    <a class="back-link" routerLink="/login-select">
+      <span class="material-symbols-outlined">arrow_back</span>
+      Geri Dön
+    </a>
+
+    <div class="login-badge company">
+      <span class="material-symbols-outlined">apartment</span>
+    </div>
+
+    <h1>Firma Girişi</h1>
+    <p>Operasyon paneline erişmek için giriş yap.</p>
+
+    <form class="login-form" (ngSubmit)="login()">
+      <div class="form-group">
+        <label>E-posta</label>
+        <input
+          id="company-email-input"
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          placeholder="firma@kuryon.com"
+          autocomplete="username"
+          [class.input-invalid]="!!fieldErrors.email"
+        />
+        <small class="field-error" *ngIf="fieldErrors.email">{{ fieldErrors.email }}</small>
+      </div>
+
+      <div class="form-group">
+        <label>Şifre</label>
+        <input
+          id="company-password-input"
+          type="password"
+          [(ngModel)]="password"
+          name="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          [class.input-invalid]="!!fieldErrors.password"
+        />
+        <small class="field-error" *ngIf="fieldErrors.password">{{ fieldErrors.password }}</small>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        Firma Paneline Gir
+      </button>
+
+      <p *ngIf="errorMessage" class="form-error">
+        {{ errorMessage }}
+      </p>
+    </form>
+  </div>
+</div>

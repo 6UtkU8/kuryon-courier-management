@@ -1,0 +1,390 @@
+<div class="dashboard-root">
+  <div class="dashboard-content">
+        <section class="dashboard-summary panel-section-top-gap" aria-label="Özet istatistikler">
+          <div class="empty-state" *ngIf="metricsLoading">Dashboard metrikleri yükleniyor...</div>
+          <div class="empty-state" *ngIf="!metricsLoading && metricsError">{{ metricsError }}</div>
+          <div class="stats-grid">
+            <app-stat-card
+              *ngFor="let stat of stats; trackBy: trackByStatLabel"
+              [label]="stat.label"
+              [value]="stat.value"
+              [trend]="stat.trend"
+              [theme]="stat.theme"
+            ></app-stat-card>
+          </div>
+        </section>
+
+        <div class="panel-page-enter">
+          <div class="ops-config-chip" aria-label="Operasyon özet bilgileri">
+            <span class="ops-info-chip u-compact-info-chip">{{ cancelWindowLabel }}</span>
+            <span class="ops-info-chip u-compact-info-chip">{{ mapRefreshLabel }}</span>
+          </div>
+          <section class="dashboard-grid">
+            <div class="left-column">
+              <app-panel-card
+                title="Atanacak Siparişler"
+                description="Atama bekleyen yeni siparişler"
+                actionText="Tümünü Gör"
+                icon="assignment"
+              >
+                <div class="filters-bar">
+                  <div class="search-box">
+                    <span class="material-symbols-outlined search-icon">search</span>
+                    <input
+                      class="u-input-base"
+                      type="text"
+                      placeholder="Sipariş, firma veya adres ara"
+                      [ngModel]="pendingSearchTerm"
+                      (ngModelChange)="onPendingSearchChange($event)"
+                    />
+                  </div>
+
+                  <div class="filter-chips">
+                    <button
+                      type="button"
+                      class="filter-chip"
+                      *ngFor="let status of pendingStatusOptions; trackBy: trackByStatus"
+                      [class.active]="pendingStatusFilter === status"
+                      (click)="setPendingStatusFilter(status)"
+                    >
+                      {{ status }}
+                    </button>
+                  </div>
+                </div>
+
+                <div class="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Firma</th>
+                        <th>Adres</th>
+                        <th>Oluşturma</th>
+                        <th>Geçen süre</th>
+                        <th>Durum</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        *ngFor="let order of filteredPendingOrders; trackBy: trackByOrderId"
+                        class="clickable-row"
+                        (click)="openOrderDetail(order)"
+                      >
+                        <td>
+                          {{ order.id }}
+                          @if (order.origin === 'store_call') {
+                            <span class="order-origin-badge">Mağaza Çağrısı</span>
+                          }
+                        </td>
+                        <td>{{ order.company }}</td>
+                        <td>{{ order.address }}</td>
+                        <td>{{ order.createdAt }}</td>
+                        <td><app-order-elapsed [order]="order" /></td>
+                        <td>
+                          <span class="status-chip warning">
+                            {{ order.status }}
+                          </span>
+                        </td>
+                      </tr>
+
+                      <tr *ngIf="filteredPendingOrders.length === 0">
+                        <td colspan="6">
+                          <div class="empty-state">{{ t.dashboard.emptyFilteredOrders }}</div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </app-panel-card>
+
+              <app-panel-card
+                title="Yoldaki Siparişler"
+                description="Kurye tarafında yapılan değişiklikler burada anında görünür"
+                actionText="Canlı"
+                icon="local_shipping"
+              >
+                <div class="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Firma</th>
+                        <th>Müşteri</th>
+                        <th>Kurye</th>
+                        <th>Geçen süre</th>
+                        <th>Ücret</th>
+                        <th>Durum</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let order of activeOrders; trackBy: trackByOrderId">
+                        <td>{{ order.company }}</td>
+                        <td>{{ order.customer }}</td>
+                        <td>{{ order.courierName }}</td>
+                        <td><app-order-elapsed [order]="order" /></td>
+                        <td>{{ order.feeLabel }}</td>
+                        <td>
+                          <span
+                            class="status-chip"
+                            [class.success]="order.status === 'Yolda'"
+                            [class.warning]="order.status === 'Hazır Alınacak'"
+                          >
+                            {{ order.status }}
+                          </span>
+                        </td>
+                        <td class="row-action-col">
+                          @if (order.canDeleteReady) {
+                            @if (confirmDeleteOrderId === order.id) {
+                              <div class="row-confirm" (click)="$event.stopPropagation()">
+                                <span>Silinsin mi?</span>
+                                <button type="button" class="mini danger u-btn-base" (click)="confirmDeleteReadyForPickup(order, $event)">Sil</button>
+                                <button type="button" class="mini u-btn-base" (click)="cancelDelete()">Vazgeç</button>
+                              </div>
+                            } @else {
+                              <button type="button" class="row-icon-btn u-btn-base" title="Siparişi Sil" (click)="openDeleteConfirm(order.id, $event)">
+                                <span class="material-symbols-outlined">delete</span>
+                              </button>
+                            }
+                          }
+                        </td>
+                      </tr>
+
+                      <tr *ngIf="activeOrders.length === 0">
+                        <td colspan="7">
+                          <div class="empty-state">{{ t.dashboard.emptyActiveOrders }}</div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </app-panel-card>
+
+              <app-panel-card
+                title="Mola Listesi"
+                description="Canlı olarak moladaki kuryeler"
+                icon="coffee"
+              >
+                <div class="table-wrapper">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Kurye</th>
+                        <th>Neden</th>
+                        <th>Süre</th>
+                        <th>İstek</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let item of breakList; trackBy: trackByBreakCourier">
+                        <td>{{ item.courier }}</td>
+                        <td>{{ item.reason }}</td>
+                        <td>{{ item.duration }}</td>
+                        <td>{{ item.request }}</td>
+                      </tr>
+
+                      <tr *ngIf="breakList.length === 0">
+                        <td colspan="4">
+                          <div class="empty-state">{{ t.dashboard.emptyBreakCouriers }}</div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </app-panel-card>
+            </div>
+
+            <div class="right-column">
+              <app-panel-card
+                title="Canlı Harita"
+                description="Kurye ve sipariş yoğunluk görünümü"
+                icon="map"
+              >
+                <app-live-map
+                  [couriers]="mapCouriers"
+                  [orders]="mapOrders"
+                ></app-live-map>
+              </app-panel-card>
+
+              <app-panel-card
+                title="Canlı Kurye Listesi"
+                description="Kurye panelindeki durum değişiklikleri anlık görünür"
+                icon="groups"
+              >
+                <div panel-header-extra class="live-courier-counts">
+                  <span class="count-pill count-online">{{ courierStatusBreakdown.online }} çevrimiçi</span>
+                  <span class="count-pill count-offline">{{ courierStatusBreakdown.offline }} çevrimdışı</span>
+                  <span class="count-pill count-break">{{ courierStatusBreakdown.onBreak }} molada</span>
+                </div>
+                <div class="filter-chips live-filter-chips">
+                  <button
+                    *ngFor="let status of courierStatusOptions; trackBy: trackByStatus"
+                    type="button"
+                    class="filter-chip"
+                    [class.active]="courierStatusFilter === status"
+                    (click)="setCourierStatusFilter(status)"
+                  >
+                    {{ status }}
+                  </button>
+                </div>
+
+                <div class="live-courier-list">
+                  <article class="live-courier-card u-surface-card" *ngFor="let courier of filteredCouriers; trackBy: trackByCourierId">
+                    <div class="live-courier-top">
+                      <div class="live-courier-avatar">
+                        {{ courier.name.charAt(0) }}
+                      </div>
+
+                      <div class="live-courier-info">
+                        <strong>{{ courier.name }}</strong>
+                        <span>{{ courier.region }} • {{ courier.vehicle }}</span>
+                      </div>
+
+                      <span [class]="courier.statusClass">
+                        {{ courier.status }}
+                      </span>
+                    </div>
+
+                    <div class="live-courier-meta">
+                      <span>Tamamlanan: {{ courier.completedOrders }}</span>
+                      <span>Aktif Sipariş: {{ courier.activeOrders }}</span>
+                      <span *ngIf="courier.status === 'Mola'">
+                        Mola: {{ courier.breakReason }} <span *ngIf="courier.breakMinutes">• {{ courier.breakMinutes }} dk</span>
+                      </span>
+                    </div>
+                  </article>
+
+                  <div class="empty-state" *ngIf="filteredCouriers.length === 0">
+                    {{ t.dashboard.emptyFilteredCouriers }}
+                  </div>
+                </div>
+              </app-panel-card>
+            </div>
+          </section>
+  </div>
+  </div>
+
+  @if (isOrderDetailOpen && selectedPendingOrder) {
+    <div class="drawer-overlay" (click)="closeOrderDetail()"></div>
+
+    <aside class="order-drawer">
+      <div class="drawer-header">
+        <div>
+          <span class="drawer-badge">Sipariş Detayı</span>
+          <h3>{{ selectedPendingOrder.id }}</h3>
+          <p>{{ selectedPendingOrder.company }}</p>
+        </div>
+
+        <button
+          class="drawer-close-btn"
+          type="button"
+          (click)="closeOrderDetail()"
+          [disabled]="isAssigningCourier"
+        >
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="drawer-body">
+        <div class="detail-card u-surface-card">
+          <span class="detail-label">Firma</span>
+          <strong>{{ selectedPendingOrder.company }}</strong>
+        </div>
+
+        <div class="detail-card u-surface-card">
+          <span class="detail-label">Adres</span>
+          <strong>{{ selectedPendingOrder.address }}</strong>
+        </div>
+
+          <div class="detail-grid">
+          <div class="detail-card u-surface-card">
+            <span class="detail-label">Oluşturulma</span>
+            <strong>{{ selectedPendingOrder.createdAt }}</strong>
+          </div>
+
+          <div class="detail-card u-surface-card">
+            <span class="detail-label">Geçen süre</span>
+            <strong class="detail-elapsed"><app-order-elapsed [order]="selectedPendingOrder" /></strong>
+          </div>
+
+          <div class="detail-card u-surface-card">
+            <span class="detail-label">Tahmini Süre (ETA)</span>
+            <strong>{{ selectedPendingOrder.eta }}</strong>
+          </div>
+        </div>
+
+        <div class="detail-card u-surface-card">
+          <span class="detail-label">Durum</span>
+          <strong class="detail-status">{{ selectedPendingOrder.status }}</strong>
+        </div>
+
+        <div class="detail-card note-card u-surface-card">
+          <span class="detail-label">Operasyon Notu</span>
+          <p>
+            Bu sipariş için çevrimiçi olan kuryeler aşağıda listelenir.
+            Uygun bir kurye seçip atama işlemini tamamlayabilirsin.
+          </p>
+        </div>
+
+        <div class="courier-section">
+          <h4>Uygun Kuryeler</h4>
+
+          <div class="courier-list">
+            <div
+              class="courier-card"
+              *ngFor="let courier of availableCouriers; trackBy: trackByCourierAssignId"
+              [class.disabled]="courier.status !== 'Müsait'"
+              [class.selected]="selectedCourier?.id === courier.id"
+              (click)="selectCourier(courier)"
+            >
+              <div class="courier-main">
+                <strong>{{ courier.name }}</strong>
+                <span>{{ courier.distance }}</span>
+              </div>
+
+              <span
+                class="courier-status"
+                [class.busy]="courier.status !== 'Müsait'"
+              >
+                {{ courier.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="drawer-footer">
+        <button
+          class="ghost-action-btn u-btn-base u-btn-ghost"
+          type="button"
+          (click)="closeOrderDetail()"
+          [disabled]="isAssigningCourier"
+        >
+          Kapat
+        </button>
+
+        <button
+          class="primary-action-btn u-btn-base u-btn-primary"
+          type="button"
+          [disabled]="!selectedCourier || isAssigningCourier"
+          (click)="assignCourier()"
+        >
+          {{ isAssigningCourier ? t.dashboard.assigning : t.dashboard.assignButton }}
+        </button>
+      </div>
+    </aside>
+  }
+
+  @if (showToast) {
+    <div class="toast-container">
+      <div
+        class="toast-message"
+        [class.toast-success]="toastType === 'success'"
+        [class.toast-error]="toastType === 'error'"
+        [class.toast-info]="toastType === 'info'"
+      >
+        <span class="toast-text">{{ toastMessage }}</span>
+        <button class="toast-close-btn u-btn-base" type="button" (click)="closeToast()">×</button>
+      </div>
+    </div>
+  }
+</div>

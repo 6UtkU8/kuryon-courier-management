@@ -1,0 +1,181 @@
+<section class="section-card panel-page-enter">
+  <div class="section-title">
+    <h3>Günlük Raporlar</h3>
+    <p>Teslim edilen paket ve kazanç özetin bu ekranda görünür.</p>
+  </div>
+
+  <div class="report-grid">
+    <article class="report-card">
+      <strong>{{ deliveredCount }}</strong>
+      <span>Toplam Teslim Paket</span>
+    </article>
+
+    <article
+      class="report-card report-card--interactive"
+      role="button"
+      tabindex="0"
+      [attr.aria-expanded]="revenueDetail() !== null"
+      [attr.aria-label]="t.courierPanel.reportsPaymentDetailAria"
+      (click)="openRevenueDetail($event)"
+      (keydown.enter)="openRevenueDetail($event)"
+      (keydown.space)="openRevenueDetail($event)"
+    >
+      <strong>{{ totalRevenueLabel }}</strong>
+      <span>Toplam Kazanılan Tutar</span>
+      <span class="report-card-hint">{{ t.courierPanel.reportsOpenDetail }}</span>
+    </article>
+
+    <article class="report-card">
+      <strong>{{ onlineMinutes }} dk</strong>
+      <span>Toplam Aktif Süre</span>
+    </article>
+
+    <article class="report-card">
+      <strong>{{ averageTicketLabel }}</strong>
+      <span>Ortalama Paket Tutarı</span>
+    </article>
+  </div>
+</section>
+
+<section class="section-card section-card--history panel-page-enter">
+  <div class="section-title">
+    <h3>Günlere Göz At</h3>
+    <p>
+      Her gün için toplam tutar ve paket sayısı; satıra tıklayınca o güne ait nakit / kart dağılımını
+      görürsünüz. Tüm sipariş listesi için
+      <span class="section-title-hint">Detay</span> bağlantısını kullanın.
+    </p>
+  </div>
+
+  @if (daySummaries().length === 0) {
+    <p class="report-history-empty">{{ t.courierPanel.reportsNoDailySummary }}</p>
+  } @else {
+    <ul class="report-history-list" role="list">
+      @for (day of daySummaries(); track day.dayKey) {
+        <li class="report-history-item">
+          <button
+            type="button"
+            class="report-history-row"
+            (click)="openDayPaymentPreview(day, $event)"
+            [attr.aria-expanded]="dayPaymentPreview?.dayKey === day.dayKey"
+            [attr.aria-label]="day.label + ' ' + t.courierPanel.reportsSeeDayPayments"
+          >
+            <span class="report-history-date">{{ day.label }}</span>
+            <span class="report-history-meta">
+              <span class="report-history-pill">{{ day.packageCount }} paket</span>
+              <strong class="report-history-amount">{{ formatAmount(day.total) }}</strong>
+            </span>
+            <span class="report-history-chevron material-symbols-outlined" aria-hidden="true"
+              >payments</span
+            >
+          </button>
+          <a
+            class="report-history-detail-link"
+            [routerLink]="['/courier-panel/reports/day', day.dayKey]"
+            (click)="$event.stopPropagation()"
+            title="Bu güne ait tüm siparişler"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">list_alt</span>
+            <span>Detay</span>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</section>
+
+@if (revenueDetail(); as detail) {
+  <div
+    class="report-detail-backdrop"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="report-detail-title"
+    (click)="closeRevenueDetail()"
+  >
+    <div class="report-detail-panel" (click)="$event.stopPropagation()">
+      <div class="report-detail-panel__head">
+        <h4 id="report-detail-title">Ödeme dağılımı</h4>
+        <button type="button" class="report-detail-close" (click)="closeRevenueDetail()" aria-label="Kapat">
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </div>
+
+      <div class="report-detail-panel__body">
+        <div class="report-detail-row report-detail-row--total">
+          <span>Toplam tutar</span>
+          <strong>{{ formatAmount(detail.total) }}</strong>
+        </div>
+        <div class="report-detail-row">
+          <span class="report-detail-dot report-detail-dot--cash"></span>
+          <span>Nakit</span>
+          <strong>{{ formatAmount(detail.cashTotal) }}</strong>
+        </div>
+        <div class="report-detail-row">
+          <span class="report-detail-dot report-detail-dot--card"></span>
+          <span>Kart</span>
+          <strong>{{ formatAmount(detail.cardTotal) }}</strong>
+        </div>
+        <div class="report-detail-row report-detail-row--muted">
+          <span>Toplam paket sayısı</span>
+          <strong>{{ detail.packageCount }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (dayPaymentPreview; as dayPv) {
+  <div
+    class="report-detail-backdrop"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="day-payment-preview-title"
+    (click)="closeDayPaymentPreview()"
+  >
+    <div class="report-detail-panel report-detail-panel--day" (click)="$event.stopPropagation()">
+      <div class="report-detail-panel__head">
+        <div>
+          <p class="report-detail-panel__eyebrow">Ödeme dağılımı</p>
+          <h4 id="day-payment-preview-title">{{ dayPv.label }}</h4>
+        </div>
+        <button
+          type="button"
+          class="report-detail-close"
+          (click)="closeDayPaymentPreview()"
+          aria-label="Kapat"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">close</span>
+        </button>
+      </div>
+
+      <div class="report-detail-panel__body">
+        <div class="report-detail-row report-detail-row--total">
+          <span>Toplam tutar</span>
+          <strong>{{ formatAmount(dayPv.breakdown.total) }}</strong>
+        </div>
+        <div class="report-detail-row">
+          <span class="report-detail-dot report-detail-dot--cash"></span>
+          <span>Toplam nakit</span>
+          <strong>{{ formatAmount(dayPv.breakdown.cashTotal) }}</strong>
+        </div>
+        <div class="report-detail-row">
+          <span class="report-detail-dot report-detail-dot--card"></span>
+          <span>Toplam kart</span>
+          <strong>{{ formatAmount(dayPv.breakdown.cardTotal) }}</strong>
+        </div>
+        <div class="report-detail-row report-detail-row--muted">
+          <span>Toplam sipariş sayısı</span>
+          <strong>{{ dayPv.breakdown.packageCount }}</strong>
+        </div>
+        <a
+          class="report-detail-full-link"
+          [routerLink]="['/courier-panel/reports/day', dayPv.dayKey]"
+          (click)="closeDayPaymentPreview()"
+        >
+          {{ t.courierPanel.reportsOpenAllOrders }}
+          <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+  </div>
+}

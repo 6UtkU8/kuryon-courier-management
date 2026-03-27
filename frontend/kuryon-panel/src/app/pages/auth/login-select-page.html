@@ -1,0 +1,61 @@
+<div class="login-select-shell">
+  <div class="login-select-bg" aria-hidden="true">
+    <span class="login-select-glow login-select-glow--left"></span>
+    <span class="login-select-glow login-select-glow--right"></span>
+  </div>
+
+  <div class="login-select-inner">
+    <div class="login-select-top-actions">
+      <a class="back-home-btn" routerLink="/">
+        <span class="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+        Geri Dön
+      </a>
+    </div>
+
+    <header class="login-select-header">
+      <div class="login-select-brand">
+        <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
+      </div>
+      <h1>Giriş Seçimi</h1>
+      <p>İhtiyacınıza uygun paneli seçin; yönlendirme otomatik olarak ilgili giriş ekranına yapılır.</p>
+    </header>
+
+    <div class="login-select-grid">
+      <a class="role-card role-card--company" routerLink="/company-login">
+        <div class="role-card__icon-wrap">
+          <span class="material-symbols-outlined" aria-hidden="true">apartment</span>
+        </div>
+        <h2 class="role-card__title">Firma Girişi</h2>
+        <p class="role-card__desc">Operasyon, sipariş ve kurye yönetimi için yönetici paneli.</p>
+        <span class="role-card__cta">
+          Devam et
+          <span class="material-symbols-outlined role-card__cta-icon" aria-hidden="true">arrow_forward</span>
+        </span>
+      </a>
+
+      <a class="role-card role-card--courier" routerLink="/courier-login">
+        <div class="role-card__icon-wrap">
+          <span class="material-symbols-outlined" aria-hidden="true">two_wheeler</span>
+        </div>
+        <h2 class="role-card__title">Kurye Girişi</h2>
+        <p class="role-card__desc">Teslimat, rota ve günlük görevler için kurye paneli.</p>
+        <span class="role-card__cta">
+          Devam et
+          <span class="material-symbols-outlined role-card__cta-icon" aria-hidden="true">arrow_forward</span>
+        </span>
+      </a>
+
+      <a class="role-card role-card--store" routerLink="/store-login">
+        <div class="role-card__icon-wrap">
+          <span class="material-symbols-outlined" aria-hidden="true">storefront</span>
+        </div>
+        <h2 class="role-card__title">Dükkan Girişi</h2>
+        <p class="role-card__desc">Sipariş takibi ve mağaza özeti için işletme paneli.</p>
+        <span class="role-card__cta">
+          Devam et
+          <span class="material-symbols-outlined role-card__cta-icon" aria-hidden="true">arrow_forward</span>
+        </span>
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,55 @@
+<div class="overlay-select-wrap">
+  <button
+    #triggerBtn
+    type="button"
+    class="overlay-select-trigger u-select-control"
+    [class.is-disabled]="disabled"
+    [attr.aria-label]="ariaLabel"
+    [attr.aria-expanded]="isOpen"
+    aria-haspopup="listbox"
+    [disabled]="disabled"
+    (click)="toggle()"
+    (keydown)="onTriggerKeydown($event)"
+  >
+    <span class="overlay-select-value">{{ selectedLabel }}</span>
+    <span class="overlay-select-caret" aria-hidden="true"></span>
+  </button>
+
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="triggerBtn"
+    [cdkConnectedOverlayOpen]="isOpen"
+    [cdkConnectedOverlayHasBackdrop]="true"
+    [cdkConnectedOverlayBackdropClass]="'cdk-overlay-transparent-backdrop'"
+    [cdkConnectedOverlayPositions]="overlayPositions"
+    [cdkConnectedOverlayPush]="true"
+    [cdkConnectedOverlayViewportMargin]="12"
+    [cdkConnectedOverlayWidth]="overlayWidth"
+    (attach)="onOverlayAttach()"
+    (backdropClick)="close()"
+    (detach)="close()"
+  >
+    <ul
+      #optionsList
+      class="overlay-select-menu"
+      role="listbox"
+      [style.max-height.px]="panelMaxHeight"
+      [attr.aria-label]="ariaLabel + ' secenekleri'"
+    >
+      <li class="overlay-select-item" *ngFor="let option of options; let i = index; trackBy: trackByValue">
+        <button
+          type="button"
+          class="overlay-select-option-btn"
+          [class.is-focused]="i === focusedIndex"
+          [class.is-selected]="isSelected(i)"
+          [attr.aria-selected]="isSelected(i)"
+          [attr.data-option-index]="i"
+          (click)="selectOption(option)"
+          (keydown)="onOptionKeydown($event, i)"
+        >
+          {{ option.label }}
+        </button>
+      </li>
+    </ul>
+  </ng-template>
+</div>

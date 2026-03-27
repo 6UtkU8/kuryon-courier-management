@@ -1,0 +1,191 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.login-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(123, 97, 255, 0.16), transparent 280px),
+    radial-gradient(circle at bottom right, rgba(33, 199, 183, 0.12), transparent 340px),
+    #0b1020;
+  animation: pageFadeIn 0.55s ease;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 460px;
+  padding: 28px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(16, 23, 43, 0.96), rgba(13, 19, 37, 0.96));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+  animation: authCardEnter 0.7s ease;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  text-decoration: none;
+  color: #9db0cf;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.login-badge {
+  width: 68px;
+  height: 68px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.login-badge.courier {
+  background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+}
+
+.login-badge span {
+  color: #ffffff;
+  font-size: 32px;
+}
+
+.login-card h1 {
+  margin: 0 0 10px;
+  color: #ffffff;
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.login-card p {
+  margin: 0 0 22px;
+  color: #97abc9;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  color: #cdd9ef;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-group input {
+  width: 100%;
+  height: 48px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  color: #eef4ff;
+  padding: 0 14px;
+  outline: none;
+  font-size: 14px;
+}
+
+.form-group input::placeholder {
+  color: #8ea1c4;
+}
+
+.form-group input:focus {
+  border-color: rgba(14, 165, 233, 0.45);
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.08);
+}
+
+.form-group input.input-invalid {
+  border-color: rgba(239, 68, 68, 0.65);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.field-error {
+  color: #fca5a5;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.form-error {
+  margin-top: 4px;
+  color: #ef4444;
+}
+
+.submit-btn {
+  margin-top: 8px;
+  min-height: 50px;
+  border: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  transform: translateY(-1px);
+}
+
+.submit-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes authCardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .login-shell {
+    padding: 16px;
+  }
+
+  .login-card {
+    padding: 22px;
+    border-radius: 22px;
+  }
+
+  .login-card h1 {
+    font-size: 26px;
+  }
+
+  .submit-btn {
+    width: 100%;
+  }
+}

@@ -1,0 +1,57 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  color: #e8edf7;
+}
+
+.admin-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(92px, 260px) minmax(0, 1fr);
+  background:
+    radial-gradient(circle at top left, rgba(123, 97, 255, 0.12), transparent 280px),
+    radial-gradient(circle at top right, rgba(33, 199, 183, 0.1), transparent 320px),
+    #0b1020;
+}
+
+@media (min-width: 1500px) {
+  .admin-shell {
+    background:
+      radial-gradient(circle at top left, rgba(123, 97, 255, 0.08), transparent 220px),
+      #0b1020;
+  }
+}
+
+.admin-shell.sidebar-collapsed {
+  grid-template-columns: 92px minmax(0, 1fr);
+}
+
+.admin-main {
+  padding: 24px;
+  position: relative;
+}
+
+.mobile-overlay {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .admin-shell,
+  .admin-shell.sidebar-collapsed {
+    grid-template-columns: 1fr;
+  }
+
+  .mobile-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    background: rgba(3, 7, 18, 0.45);
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-main {
+    padding: 16px;
+  }
+}

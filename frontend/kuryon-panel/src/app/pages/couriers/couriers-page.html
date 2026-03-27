@@ -1,0 +1,413 @@
+<div class="panel-page-enter">
+    <section class="page-card panel-section-top-gap">
+      <div class="page-header">
+        <div>
+          <h1>Kuryeler</h1>
+          <p>Kurye durumu, mola nedeni ve admin kontrolü bu ekranda görünür.</p>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-box">
+            <strong>{{ couriers.length }}</strong>
+            <span>Toplam Kurye</span>
+          </div>
+
+          <div class="summary-box">
+            <strong>{{ availableCount }}</strong>
+            <span>Çevrimiçi</span>
+          </div>
+
+          <div class="summary-box">
+            <strong>{{ offlineCount }}</strong>
+            <span>Çevrimdışı</span>
+          </div>
+
+          <div class="summary-box">
+            <strong>{{ breakCount }}</strong>
+            <span>Molada</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs-row">
+        <button type="button" class="tab-btn" [disabled]="!canAddCourier">
+          {{ canAddCourier ? 'Kurye Ekle' : 'Kurye ekleme yetkisi yok' }}
+        </button>
+        <button
+          *ngFor="let tab of tabOptions; trackBy: trackByTabOption"
+          type="button"
+          class="tab-btn"
+          [class.active]="activeTab === tab.key"
+          (click)="setActiveTab(tab.key)"
+        >
+          {{ tab.label }}
+        </button>
+      </div>
+
+      @if (activeTab === 'active') {
+        <div class="tab-panel">
+        <div class="empty-state-card" *ngIf="pageError">
+          {{ pageError }}
+          <div class="row-actions">
+            <button type="button" class="action-btn review mini" (click)="reloadPage()">Yeniden dene</button>
+          </div>
+        </div>
+        <div class="filters-bar">
+          <div class="search-box">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input
+              type="text"
+              placeholder="Kurye adına göre vardiya satırı ara"
+              [ngModel]="searchTerm"
+              (ngModelChange)="onShiftSearchChange($event)"
+            />
+          </div>
+
+          <div class="filter-chips">
+            <button
+              *ngFor="let status of statusOptions; trackBy: trackByStatusOption"
+              type="button"
+              class="filter-chip"
+              [class.active]="statusFilter === status"
+              (click)="setStatusFilter(status)"
+            >
+              {{ status }}
+            </button>
+          </div>
+        </div>
+        <div class="empty-state-card" *ngIf="statusActionError">
+          {{ statusActionError }}
+        </div>
+
+        <div class="table-wrapper filter-content-pane">
+          <table class="data-table" *ngIf="!isShiftLoading">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Ad Soyad</th>
+                <th>Vardiya</th>
+                <th>Mazeret</th>
+                <th>İzin</th>
+                <th>İşlemler</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of displayedShiftRows; trackBy: trackByShiftRowId">
+                <td>#{{ row.id }}</td>
+                <td>
+                  <div class="cell-main">
+                    <strong>{{ row.courierName }}</strong>
+                    <span class="status-chip" [ngClass]="row.courierStatus === 'Çevrimiçi' ? 'status-available' : row.courierStatus === 'Mola' ? 'status-break' : 'status-offline'">
+                      {{ row.courierStatus }}
+                    </span>
+                  </div>
+                </td>
+                <td>{{ row.shiftStart }} - {{ row.shiftEnd }}</td>
+                <td>{{ row.lateReason }}</td>
+                <td>
+                  {{ row.isDayOff ? ('İzinli (' + row.dayOffDays + ' gün)') : 'Yok' }}
+                </td>
+                <td>
+                  <div class="row-actions">
+                    <button type="button" class="action-btn review mini" [disabled]="!canEditCourier" (click)="openShiftEditDrawer(row.id)">
+                      Düzenle
+                    </button>
+                    <button type="button" class="action-btn online mini" [disabled]="isPageLoading" (click)="setShiftStatus(row.courierId, 'Çevrimiçi')">
+                      Online
+                    </button>
+                    <button type="button" class="action-btn offline mini" [disabled]="isPageLoading" (click)="setShiftStatus(row.courierId, 'Çevrimdışı')">
+                      Offline
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="empty-state-card" *ngIf="isShiftLoading || isPageLoading">
+            Kurye kayıtları yükleniyor...
+          </div>
+          <div class="empty-state-card" *ngIf="!isShiftLoading && displayedShiftRows.length === 0">
+            Vardiya düzenleme için gösterilecek kurye bulunamadı.
+          </div>
+        </div>
+        </div>
+      }
+
+      @if (activeTab === 'applications') {
+        <section class="history-tab tab-panel">
+          <div class="search-box">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input
+              type="text"
+              placeholder="Mola geçmişinde ara"
+              [ngModel]="breakHistorySearchTerm"
+              (ngModelChange)="onBreakHistorySearchChange($event)"
+            />
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Kurye</th>
+                  <th>Kabul Edildi</th>
+                  <th>Durum</th>
+                  <th>Kabul Eden</th>
+                  <th>Reddeden</th>
+                  <th>Sonlandıran</th>
+                  <th>Dakika</th>
+                  <th>İstek Tarihi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of displayedBreakHistoryRows; trackBy: trackByBreakHistoryRow">
+                  <td>#{{ row.id }}</td>
+                  <td>{{ row.courierName }}</td>
+                  <td>{{ row.accepted || '-' }}</td>
+                  <td>
+                    <span class="status-chip" [ngClass]="row.statusClass">
+                      {{ row.status }}
+                    </span>
+                  </td>
+                  <td>{{ row.acceptedBy || '-' }}</td>
+                  <td>{{ row.rejectedBy || '-' }}</td>
+                  <td>{{ row.endedBy || '-' }}</td>
+                  <td>{{ row.minutes }} dk</td>
+                  <td>{{ row.requestedAt || '-' }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div class="empty-state-card" *ngIf="displayedBreakHistoryRows.length === 0">
+              Mola geçmişi kaydı bulunamadı.
+            </div>
+          </div>
+        </section>
+      }
+
+      @if (activeTab === 'history') {
+        <section class="history-tab tab-panel">
+          <div class="search-box">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input
+              type="text"
+              placeholder="Havuz kurye bilgilerinde ara"
+              [ngModel]="poolSearchTerm"
+              (ngModelChange)="onPoolSearchChange($event)"
+            />
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Mesai Durumu</th>
+                  <th>Adı</th>
+                  <th>Çalışma Şekli</th>
+                  <th>Ayarlar</th>
+                  <th>Sepette Max Paket</th>
+                  <th>Puan</th>
+                  <th>Çalışma Durumu</th>
+                  <th>İşlemler</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of displayedPoolCourierRows; trackBy: trackByPoolRow">
+                  <td>#{{ row.id }}</td>
+                  <td>{{ row.mesaiDurumu }}</td>
+                  <td>{{ row.name }}</td>
+                  <td>{{ row.workType }}</td>
+                  <td>
+                    <input
+                      class="table-input"
+                      type="text"
+                      [(ngModel)]="row.settingsLabel"
+                      [disabled]="!row.isEditing"
+                      (ngModelChange)="markPoolRowDirty(row.id)"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      class="table-input small-input"
+                      type="number"
+                      min="1"
+                      max="12"
+                      [(ngModel)]="row.maxBasketPackages"
+                      [disabled]="!row.isEditing || !canChangeCourierMaxPackage"
+                      (ngModelChange)="markPoolRowDirty(row.id)"
+                    />
+                  </td>
+                  <td>
+                    <span class="rating-stars">★ {{ row.rating }}</span>
+                  </td>
+                  <td>
+                    <span class="status-chip" [ngClass]="row.stateClass">
+                      {{ row.workState }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="row-actions">
+                      <button type="button" class="action-btn review mini" [disabled]="!canEditCourier" (click)="startPoolRowEdit(row.id)">
+                        Düzenle
+                      </button>
+                      <button
+                        type="button"
+                        class="action-btn mini"
+                        [ngClass]="row.workState === 'Aktif' ? 'offline' : 'online'"
+                        (click)="setPoolWorkState(row.id, row.workState === 'Aktif' ? 'Pasif' : 'Aktif')"
+                      >
+                        {{ row.workState === 'Aktif' ? 'Pasife Al' : 'Aktifleştir' }}
+                      </button>
+                      <button
+                        type="button"
+                        class="save-btn mini-save"
+                        [disabled]="!row.isDirty || !canChangeCourierMaxPackage"
+                        (click)="savePoolRow(row.id)"
+                      >
+                        Kaydet
+                      </button>
+                    </div>
+                    <div class="saved-at" *ngIf="row.lastSavedAt">Son kayıt: {{ row.lastSavedAt }}</div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="empty-state-card" *ngIf="displayedPoolCourierRows.length === 0">
+            Aradığın kriterlere uygun havuz kurye kaydı bulunamadı.
+          </div>
+        </section>
+      }
+    </section>
+</div>
+
+@if (activeDrawerRowId !== null && shiftEditDraft) {
+  <div class="drawer-overlay" (click)="closeShiftEditDrawer()"></div>
+
+  <aside class="courier-edit-drawer">
+    <div class="drawer-header">
+      <div>
+        <span class="drawer-badge">Kurye Düzenleme</span>
+        <h3>{{ shiftEditDraft.courierName }}</h3>
+      </div>
+      <button class="drawer-close-btn" type="button" (click)="closeShiftEditDrawer()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="drawer-body">
+      <div class="drawer-form-grid">
+        <label class="form-group full-width">
+          <span>Ad Soyad</span>
+          <input
+            type="text"
+            [(ngModel)]="shiftEditDraft.courierName"
+            [class.input-invalid]="!!drawerFieldErrors.courierName"
+          />
+          <small class="field-error" *ngIf="drawerFieldErrors.courierName">{{ drawerFieldErrors.courierName }}</small>
+        </label>
+
+        <label class="form-group">
+          <span>Telefon Numarası</span>
+          <input
+            type="text"
+            [(ngModel)]="shiftEditDraft.phone"
+            [class.input-invalid]="!!drawerFieldErrors.phone"
+          />
+          <small class="field-error" *ngIf="drawerFieldErrors.phone">{{ drawerFieldErrors.phone }}</small>
+        </label>
+
+        <label class="form-group">
+          <span>Şifre</span>
+          <input
+            type="password"
+            [(ngModel)]="shiftEditDraft.password"
+            [class.input-invalid]="!!drawerFieldErrors.password"
+          />
+          <small class="field-error" *ngIf="drawerFieldErrors.password">{{ drawerFieldErrors.password }}</small>
+        </label>
+
+        <label class="form-group full-width">
+          <span>IBAN</span>
+          <input
+            type="text"
+            [(ngModel)]="shiftEditDraft.iban"
+            [class.input-invalid]="!!drawerFieldErrors.iban"
+          />
+          <small class="field-error" *ngIf="drawerFieldErrors.iban">{{ drawerFieldErrors.iban }}</small>
+        </label>
+
+        <label class="form-group">
+          <span>Vardiya Başlangıç</span>
+          <input
+            type="time"
+            [(ngModel)]="shiftEditDraft.shiftStart"
+            [class.input-invalid]="!!drawerFieldErrors.shiftStart"
+          />
+          <small class="field-error" *ngIf="drawerFieldErrors.shiftStart">{{ drawerFieldErrors.shiftStart }}</small>
+        </label>
+
+        <label class="form-group">
+          <span>Vardiya Bitiş</span>
+          <input
+            type="time"
+            [(ngModel)]="shiftEditDraft.shiftEnd"
+            [class.input-invalid]="!!drawerFieldErrors.shiftEnd"
+          />
+          <small class="field-error" *ngIf="drawerFieldErrors.shiftEnd">{{ drawerFieldErrors.shiftEnd }}</small>
+        </label>
+
+        <label class="form-group full-width">
+          <span>Mazeret</span>
+          <select [(ngModel)]="shiftEditDraft.lateReason">
+            <option *ngFor="let reason of lateReasonOptions; trackBy: trackByLateReason" [value]="reason">{{ reason }}</option>
+          </select>
+        </label>
+
+        <label class="form-group full-width">
+          <span>Çevrim Durumu</span>
+          <select [(ngModel)]="shiftEditDraft.courierStatus" [disabled]="shiftEditDraft.isDayOff">
+            <option *ngFor="let status of courierStatusOptions; trackBy: trackByCourierStatus" [value]="status">{{ status }}</option>
+          </select>
+        </label>
+
+        <label class="switch-row full-width">
+          <div>
+            <strong>İzin Günü</strong>
+            <p>Kurye bugün izinliyse aktif et.</p>
+          </div>
+          <input
+            type="checkbox"
+            [checked]="shiftEditDraft.isDayOff"
+            (change)="onDrawerDayOffChange($any($event.target).checked)"
+          />
+        </label>
+
+        <label class="form-group">
+          <span>İzin Kaç Gün</span>
+          <input
+            type="number"
+            min="1"
+            max="30"
+            [(ngModel)]="shiftEditDraft.dayOffDays"
+            [disabled]="!shiftEditDraft.isDayOff"
+            [class.input-invalid]="!!drawerFieldErrors.dayOffDays"
+          />
+          <small class="field-error" *ngIf="drawerFieldErrors.dayOffDays">{{ drawerFieldErrors.dayOffDays }}</small>
+        </label>
+
+        <div class="drawer-status full-width">
+          <span>Mevcut Durum</span>
+          <strong>{{ currentDrawerCourierStatus }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-footer">
+      <button type="button" class="ghost-btn" (click)="closeShiftEditDrawer()">İptal</button>
+      <button type="button" class="save-btn" (click)="saveShiftDrawer()">Kaydet</button>
+    </div>
+  </aside>
+}

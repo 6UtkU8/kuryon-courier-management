@@ -1,0 +1,5 @@
+@if (display(); as elapsed) {
+  <span class="order-elapsed" [class.order-elapsed--live]="elapsed.live">
+    <span class="order-elapsed__value">{{ elapsed.text }}</span>
+  </span>
+}

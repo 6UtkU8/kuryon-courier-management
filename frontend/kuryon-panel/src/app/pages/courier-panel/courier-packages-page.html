@@ -1,0 +1,128 @@
+<section class="section-card panel-page-enter">
+  <div class="section-title">
+    <h3>Teslim Edilen Paketler</h3>
+    <p>Geçmiş paketlerini ve ödeme bilgilerini buradan düzenleyebilirsin.</p>
+  </div>
+
+  <div #historySection class="history-list history-list--responsive">
+    <article class="history-card" *ngFor="let row of historyRows; trackBy: trackByHistoryRow">
+      <div class="history-brand">
+        <div class="history-logo">{{ row.item.image }}</div>
+
+        <div class="history-brand-info">
+          <h4>{{ row.item.company }}</h4>
+          <p>{{ row.item.customer }}</p>
+        </div>
+      </div>
+
+      <div class="history-meta">
+        <div class="history-line"><strong>Hazır:</strong> {{ row.item.preparedAt }}</div>
+        <div class="history-line"><strong>Adres:</strong> {{ row.item.address }}</div>
+        @if (row.hasDeliveryNote) {
+          <div class="history-line history-line-note">
+            <strong>Teslimat Notu:</strong> {{ row.deliveryNotePreview }}
+            @if (row.deliveryNoteFull !== row.deliveryNotePreview) {
+              <details class="history-note-details">
+                <summary>Tüm notu gör</summary>
+                <div class="history-note-full">{{ row.deliveryNoteFull }}</div>
+              </details>
+            }
+          </div>
+        }
+        <div class="history-line"><strong>Durum:</strong> Teslim Edildi ({{ row.item.deliveredAtText }})</div>
+        <div class="history-line"><strong>Tutar:</strong> {{ row.totalLabel }}</div>
+        <div class="history-line"><strong>Ödeme:</strong> {{ row.item.paymentType }}</div>
+      </div>
+
+      <div class="history-legs" aria-label="Aşama süreleri">
+        <div class="history-legs__head">Süre özeti</div>
+        <div class="history-legs__grid">
+          <div class="history-leg">
+            <span class="history-leg__label">Toplam süre</span>
+            <span class="history-leg__value">{{ row.legTotalLabel }}</span>
+          </div>
+          <div class="history-leg">
+            <span class="history-leg__label">Oluşturma → Firmadayım</span>
+            <span class="history-leg__value">{{ row.toFirmadayimLabel }}</span>
+          </div>
+          <div class="history-leg">
+            <span class="history-leg__label">Firmadayım → Yola çıktım</span>
+            <span class="history-leg__value">{{ row.firmadayimToYolaLabel }}</span>
+          </div>
+          <div class="history-leg">
+            <span class="history-leg__label">Yola çıktım → Teslim</span>
+            <span class="history-leg__value">{{ row.yolaToDeliveredLabel }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="history-actions">
+        <button type="button" (click)="openHistoryAction(row.item)">Düzenle</button>
+      </div>
+    </article>
+  </div>
+</section>
+
+@if (isHistoryActionModalOpen && selectedHistoryItem) {
+  <div class="history-modal-shell" role="presentation">
+    <div class="modal-overlay" (click)="closeHistoryActionModal()"></div>
+
+    <div class="history-modal" (click)="$event.stopPropagation()">
+      <div class="history-modal-header">
+        <div>
+          <h3>Fişi Güncelle</h3>
+          <p>Fiyat ve ödeme tipini güncelleyebilirsin.</p>
+        </div>
+
+        <button class="modal-close-btn" type="button" (click)="closeHistoryActionModal()">×</button>
+      </div>
+
+      <div class="history-modal-legs" *ngIf="selectedHistoryItem">
+        <div class="history-legs__head">Süre özeti</div>
+        <div class="history-legs__grid history-legs__grid--compact">
+          <div class="history-leg">
+            <span class="history-leg__label">Toplam</span>
+            <span class="history-leg__value">{{ selectedHistoryLegLabels.total }}</span>
+          </div>
+          <div class="history-leg">
+            <span class="history-leg__label">→ Firmadayım</span>
+            <span class="history-leg__value">{{ selectedHistoryLegLabels.toFirmadayim }}</span>
+          </div>
+          <div class="history-leg">
+            <span class="history-leg__label">Firmadayım → Yola</span>
+            <span class="history-leg__value">{{ selectedHistoryLegLabels.firmadayimToYola }}</span>
+          </div>
+          <div class="history-leg">
+            <span class="history-leg__label">Yola → Teslim</span>
+            <span class="history-leg__value">{{ selectedHistoryLegLabels.yolaToDelivered }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="history-modal-form">
+        <div class="history-form-group">
+          <label>Fiyat</label>
+          <input type="number" [(ngModel)]="editHistoryPrice" (input)="onHistoryFieldInput('price')" />
+        </div>
+
+        <div class="history-form-group history-form-group-select payment-select-wrap">
+          <label>Ödeme Tipi</label>
+          <select
+            class="history-payment-select payment-select"
+            [(ngModel)]="editHistoryPaymentType"
+            (change)="onHistoryFieldInput('payment')"
+          >
+            <option *ngFor="let payment of paymentOptions; trackBy: trackByPaymentOption" [ngValue]="payment">
+              {{ payment }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="history-modal-actions">
+        <button class="modal-primary-btn" type="button" (click)="submitHistoryUpdate()">Kaydet</button>
+        <button class="modal-secondary-btn" type="button" (click)="closeHistoryActionModal()">Kapat</button>
+      </div>
+    </div>
+  </div>
+}

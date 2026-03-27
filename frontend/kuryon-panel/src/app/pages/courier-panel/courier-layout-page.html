@@ -1,0 +1,187 @@
+<div class="courier-page panel-page-enter" *ngIf="courier">
+  <header class="courier-header">
+    <div class="header-text">
+      <h1>Hoş geldin, {{ courier.name }}</h1>
+    </div>
+
+    <div class="header-actions">
+      <button type="button" class="header-btn secondary u-btn-base" (click)="openShiftInfo()">Vardiya Bilgisi</button>
+      <a class="header-btn danger u-btn-base" routerLink="/">Çıkış Yap</a>
+    </div>
+  </header>
+
+  <section class="courier-profile-card u-surface-panel">
+    <div class="profile-main">
+      <div class="profile-avatar">
+        {{ courier.name.charAt(0) }}
+      </div>
+
+      <div class="profile-info">
+        <h2>{{ courier.name }}</h2>
+        <p class="profile-phone-line">{{ courier.phone }} • {{ courier.region }}</p>
+
+        <div
+          class="courier-status-line"
+          [class.status-line-online]="courier.status === 'Çevrimiçi'"
+          [class.status-offline]="courier.status === 'Çevrimdışı'"
+          [class.status-line-break]="courier.status === 'Mola'"
+        >
+          <span class="status-dot" aria-hidden="true"></span>
+          <span class="status-text">{{ courier.status }}</span>
+          @if (courier.status === 'Mola' && courier.breakReason) {
+            <span class="status-extra">
+              · {{ courier.breakReason }}
+              @if (courier.breakMinutes) {
+                <span> ({{ courier.breakMinutes }} dk)</span>
+              }
+            </span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="status-center-area">
+      @if (isCenterPanelRendered) {
+        <div
+          class="status-center-panel"
+          [class.closing]="isCenterPanelClosing"
+        >
+          @if (centerPanelMode === 'confirm' && pendingStatusSelection) {
+            <p class="status-inline-confirm-text">
+              Durumunuzu <strong>{{ pendingStatusSelection }}</strong> olarak değiştirmek istediğinize emin misiniz?
+            </p>
+            <div class="status-inline-confirm-actions">
+              <button class="modal-primary-btn u-btn-base u-btn-primary" type="button" (click)="confirmPendingStatus()">
+                Evet, Değiştir
+              </button>
+              <button class="modal-secondary-btn u-btn-base u-btn-ghost" type="button" (click)="cancelPendingStatus()">
+                Hayır
+              </button>
+            </div>
+          } @else if (centerPanelMode === 'confirm' && centerMessage) {
+            <p class="status-inline-confirm-text">{{ centerMessage }}</p>
+            <div class="status-inline-confirm-actions">
+              <button class="modal-secondary-btn u-btn-base u-btn-ghost" type="button" (click)="cancelPendingStatus()">
+                Tamam
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="status-switch-stack">
+      <div
+        class="status-switch"
+        [class.status-online]="courier.status === 'Çevrimiçi'"
+        [class.status-offline]="courier.status === 'Çevrimdışı'"
+        [class.status-break]="courier.status === 'Mola'"
+      >
+        <div
+          class="status-switch-slider"
+          [style.transform]="statusSliderTransform"
+        ></div>
+
+        <button
+          *ngFor="let status of statusOptions; trackBy: trackByString"
+          type="button"
+          class="status-switch-btn"
+          [class.active]="courier.status === status"
+          (click)="setCourierStatus(status)"
+        >
+          {{ status }}
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <nav class="courier-nav">
+    <a routerLink="/courier-panel/home" routerLinkActive="active">Anasayfa</a>
+    <a routerLink="/courier-panel/packages" routerLinkActive="active">Paketler</a>
+    <a
+      routerLink="/courier-panel/reports"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: false }"
+      >Raporlar</a
+    >
+    <a routerLink="/courier-panel/havuz" routerLinkActive="active">Havuz</a>
+  </nav>
+
+  <section class="courier-content">
+    <router-outlet></router-outlet>
+  </section>
+
+  @if (isShiftInfoOpen) {
+    <div class="modal-layer" role="presentation">
+      <div class="modal-overlay" (click)="closeShiftInfo()"></div>
+
+      <div class="confirm-modal shift-info-modal u-surface-panel">
+        <div class="confirm-modal-header">
+          <h3>Vardiya Bilgisi</h3>
+          <p *ngFor="let line of shiftInfoLines; trackBy: trackByString" class="shift-info-line">{{ line }}</p>
+        </div>
+
+        <div class="confirm-modal-actions">
+          <button class="modal-primary-btn u-btn-base u-btn-primary" type="button" (click)="closeShiftInfo()">Tamam</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (isBreakModalOpen) {
+    <div class="modal-layer" role="presentation">
+      <div class="modal-overlay" (click)="closeBreakModal()"></div>
+
+      <div class="break-modal u-surface-panel">
+        <div class="break-modal-header">
+          <div>
+            <span class="break-modal-badge">Mola Seçimi</span>
+            <h3>Mola nedeni seç</h3>
+            <p>Mola durumuna geçmeden önce bir neden ve süre seç.</p>
+          </div>
+
+          <button class="modal-close-btn u-btn-base" type="button" (click)="closeBreakModal()">
+            ×
+          </button>
+        </div>
+
+        <div class="break-options">
+          <button
+            *ngFor="let option of breakOptions; trackBy: trackByString"
+            type="button"
+            class="break-option-btn"
+            [class.selected]="selectedBreakOption === option"
+            (click)="selectBreakReason(option)"
+          >
+            {{ option }}
+          </button>
+        </div>
+
+        <div class="break-duration-group">
+          <label>Mola Süresi (Dakika)</label>
+          <div class="break-duration-chips" role="group" aria-label="Mola süresi dakika">
+            <button
+              *ngFor="let m of breakDurationMinutesOptions; trackBy: trackByNumber"
+              type="button"
+              class="break-duration-chip"
+              [class.selected]="pendingBreakMinutes === m"
+              (click)="selectBreakMinutes(m)"
+            >
+              {{ m }} dk
+            </button>
+          </div>
+        </div>
+
+        <div class="break-modal-actions">
+          <button class="modal-primary-btn u-btn-base u-btn-primary" type="button" (click)="submitBreakSelection()">
+            Mola Başlat
+          </button>
+          <button class="modal-secondary-btn u-btn-base u-btn-ghost" type="button" (click)="closeBreakModal()">
+            Vazgeç
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>
